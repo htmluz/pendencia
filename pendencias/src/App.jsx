@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react'
+import React from 'react';
 import { AiOutlinePlus } from "react-icons/ai";
 import './App.css';
 import Tabela from './components/tabela';
@@ -15,13 +16,13 @@ function App() {
       <div className='text-[#ffffffde] flex w-full p-2' >
         <Tabela />
       </div>
-      <footer className='py-1 w-full fixed bottom-0 text-[#ffffffde] bg-black flex' >
-        <a href=''>Em Andamento</a>
-        <a href=''>Concluídos</a>
-        <a href=''>Todos</a>
-        <a href=''>1</a>
-        <a href=''>2</a>
-        <a href=''>-</a>
+      <footer className='py-1 border-[#292929] w-full fixed bottom-0 text-[#ffffffde] flex ' >
+        <a className='px-1 transition rounded align-left hover:bg-[#1b1b1b] hover:text-[#eeeeeede]' href=''>Em Andamento</a>
+        <a className='px-1 transition rounded align-left hover:bg-[#1b1b1b] hover:text-[#eeeeeede]' href=''>Concluídos</a>
+        <a className='px-1 transition rounded align-left hover:bg-[#1b1b1b] hover:text-[#eeeeeede]' href=''>Todos</a>
+        <a className='px-1 transition rounded hover:bg-[#1b1b1b] hover:text-[#eeeeeede] fixed right-1' href=''>1</a>
+        <a className='px-1 transition rounded hover:bg-[#1b1b1b] hover:text-[#eeeeeede] fixed right-5' href=''>2</a>
+        <a className='px-1 transition rounded hover:bg-[#1b1b1b] hover:text-[#eeeeeede] fixed right-10' href=''>-</a>
       </footer>
     </>
   )

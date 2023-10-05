@@ -7,3 +7,11 @@
   line-height: 1.5;
   background-color: #242424;
 }
+
+tr:nth-child(even) {
+  background-color: #343434; 
+}
+
+tr:nth-child(odd) {
+  background-color: #242424; 
+}
