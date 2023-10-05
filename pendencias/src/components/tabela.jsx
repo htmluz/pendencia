@@ -24,7 +24,7 @@ const Tabela = () => {
 
         loadPendencia();
     }, [])
-
+    
     console.log(pendencias);
     if(loading) {
         return <p>Carregando...</p>
