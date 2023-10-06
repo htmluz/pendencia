@@ -6,7 +6,11 @@ export default {
       Inter: ['Inter', 'sans-serif'],
       system: ['system-ui', 'serif'],
     },
-    extend: {},
+    extend: {
+      boxShadow: {
+        'modal': '0 0 10px rgba(0, 0, 0, 1)',
+      }
+    },
   },
   plugins: [],
 }

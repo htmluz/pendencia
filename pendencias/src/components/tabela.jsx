@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { Component } from 'react';
 import { useState, useEffect } from 'react'
 
 
@@ -8,7 +8,7 @@ const Tabela = () => {
     const API = "http://localhost:5666";
     const [pendencias, setPendencias] = useState([]);
     const [loading, setLoading] = useState(false);
-
+    
     useEffect(() => {
         const loadPendencia = async() => {
             setLoading(true);
@@ -25,9 +25,8 @@ const Tabela = () => {
         loadPendencia();
     }, [])
     
-    console.log(pendencias);
     if(loading) {
-        return <p>Carregando...</p>
+        return <p className='font-Inter'>Carregando pendências...</p>
     }
 
     return (

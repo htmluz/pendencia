@@ -3,6 +3,8 @@ import React from 'react';
 import { AiOutlinePlus } from "react-icons/ai";
 import './App.css';
 import Tabela from './components/tabela';
+import ModalNovaPendencia from './components/modalnovapendencia';
+
 
 function App() {
   return (
@@ -16,6 +18,7 @@ function App() {
       <div className='text-[#ffffffde] flex w-full p-2' >
         <Tabela />
       </div>
+      <ModalNovaPendencia />
       <footer className='py-1 border-[#292929] w-full fixed bottom-0 text-[#ffffffde] flex ' >
         <a className='px-1 transition rounded align-left hover:bg-[#1b1b1b] hover:text-[#eeeeeede]' href=''>Em Andamento</a>
         <a className='px-1 transition rounded align-left hover:bg-[#1b1b1b] hover:text-[#eeeeeede]' href=''>Concluídos</a>
