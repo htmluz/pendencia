@@ -2,10 +2,9 @@ import React, { Component } from 'react';
 import { useState, useEffect } from 'react'
 
 
-
 const Tabela = () => {
 
-    const API = "http://localhost:5666";
+    const API = "http://localhost:3001";
     const [pendencias, setPendencias] = useState([]);
     const [loading, setLoading] = useState(false);
     
@@ -60,9 +59,9 @@ const Tabela = () => {
                         <td>{item.incidenturl}</td>
                         <td>
                             <div>
-                                <a href="">a</a>
-                                <a href="">a</a>
-                                <a href="">a</a>
+                                <a href="">a </a>
+                                <a href="">a </a>
+                                <a href="">a </a>
                             </div>
                         </td>
                     </tr>
