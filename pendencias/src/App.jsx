@@ -7,18 +7,26 @@ import ModalNovaPendencia from './components/modalnovapendencia';
 
 
 function App() {
+  const [modalNova, setModalNova] = useState(false);
+
+  const clickNovaPendencia = () => {
+    setModalNova(current => !current);
+  }
+
   return (
     <>
       <nav className='flex flex-row justify-between max-h-10 px-2 py-2 text-sm text-[#ffffffde] bg-gradient-to-b from-[#212121]'>
          <h1 className='font-Inter font-bold cursor-default'>Pendências Monitoramento</h1>
-         <a className='flex font-Inter font-bold cursor-default hover:bg-[#1b1b1b] transition px-1 rounded hover:text-[#eeeeeede]'>
+         <a onClick={clickNovaPendencia} className='flex font-Inter font-bold cursor-default hover:bg-[#1b1b1b] transition px-1 rounded hover:text-[#eeeeeede]'>
             <AiOutlinePlus className='mr-1 mt-1 cursor-pointer'/> Nova Pendência 
           </a>
       </nav>
       <div className='text-[#ffffffde] flex w-full p-2' >
         <Tabela />
       </div>
-
+      <div>
+       { modalNova ? <ModalNovaPendencia fecharModal={clickNovaPendencia} /> : null}
+      </div>
       <footer className='py-1 border-[#292929] w-full fixed bottom-0 text-[#ffffffde] flex ' >
         <a className='px-1 transition rounded align-left hover:bg-[#1b1b1b] hover:text-[#eeeeeede]' href=''>Em Andamento</a>
         <a className='px-1 transition rounded align-left hover:bg-[#1b1b1b] hover:text-[#eeeeeede]' href=''>Concluídos</a>
@@ -30,5 +38,8 @@ function App() {
     </>
   )
 }
+
+
+
 
 export default App
