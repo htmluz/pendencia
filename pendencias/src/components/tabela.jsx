@@ -32,20 +32,39 @@ const Tabela = () => {
     return (
         <table className="font-Inter w-full">
             <thead className="text-left border-b-2 border-[#292929]">
-                <tr>
-                    <th>ID</th>
-                    <th>Título</th>
+                <tr >
+                    <th >Título</th>
                     <th>Tipo</th>
                     <th>Responsável</th>
+                    <th>Início</th>
+                    <th>Previsão</th>
+                    <th>Atualizar em</th>
+                    <th>Task</th>
+                    <th>Incidente</th>
                 </tr>
             </thead>
             <tbody>
                 {pendencias.map((item) => (
-                    <tr key={item.id}>
-                        <td>{item.id}</td>
+                    <tr className=' font-system text-sm hover:bg-[#12121266] transition-all cursor-default' key={item.id}>
                         <td>{item.titulo}</td>
                         <td>{item.tipo}</td>
                         <td>{item.responsavel}</td>
+                        <td>{item.dateinit}</td>
+                        <td>{item.dateend}</td>
+                        <td>{item.dateatt}</td>
+                        <td>
+                            <div>
+                                {item.taskid}
+                            </div>
+                        </td>
+                        <td>{item.incidenturl}</td>
+                        <td>
+                            <div>
+                                <a href="">a</a>
+                                <a href="">a</a>
+                                <a href="">a</a>
+                            </div>
+                        </td>
                     </tr>
                 ))}
             </tbody>
