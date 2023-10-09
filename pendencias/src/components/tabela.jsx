@@ -46,8 +46,8 @@ const Tabela = () => {
             </thead>
             <tbody>
                 {pendencias.map((item) => (
-                    <tr className=' font-system text-sm hover:bg-[#12121266] transition-all cursor-default' key={item.id}>
-                        <td>{item.titulo}</td>
+                    <tr className='font-system text-sm hover:bg-[#12121266] transition-all cursor-default leading-6' key={item.id}>
+                        <td className='pl-1' >{item.titulo}</td>
                         <td>{item.tipo}</td>
                         <td>{item.responsavel}</td>
                         <td>{item.dateinit}</td>
@@ -59,11 +59,11 @@ const Tabela = () => {
                             </div>
                         </td>
                         <td>{item.incidenturl}</td>
-                        <td>
+                        <td className='pr-0'>
                             <div className='flex flex-row pr-0'>
-                                <a href=""><BiCommentDetail /> </a>
-                                <a href=""><BiEdit /> </a>
-                                <a href=""><AiOutlineCheckSquare /></a>
+                                <a href=""className='cursor-default' ><BiCommentDetail /> </a>
+                                <a href=""className='cursor-default'><BiEdit /> </a>
+                                <a href=""className='cursor-default'><AiOutlineCheckSquare /></a>
                             </div>
                         </td>
                     </tr>
