@@ -1,5 +1,7 @@
 import React, { Component } from 'react';
 import { useState, useEffect } from 'react'
+import { BiCommentDetail, BiEdit } from "react-icons/bi";
+import { AiOutlineCheckSquare } from "react-icons/ai";
 
 
 const Tabela = () => {
@@ -31,8 +33,8 @@ const Tabela = () => {
     return (
         <table className="font-Inter w-full">
             <thead className="text-left border-b-2 border-[#292929]">
-                <tr >
-                    <th >Título</th>
+                <tr className='cursor-default select-none' >
+                    <th>Título</th>
                     <th>Tipo</th>
                     <th>Responsável</th>
                     <th>Início</th>
@@ -58,10 +60,10 @@ const Tabela = () => {
                         </td>
                         <td>{item.incidenturl}</td>
                         <td>
-                            <div>
-                                <a href="">a </a>
-                                <a href="">a </a>
-                                <a href="">a </a>
+                            <div className='flex flex-row pr-0'>
+                                <a href=""><BiCommentDetail /> </a>
+                                <a href=""><BiEdit /> </a>
+                                <a href=""><AiOutlineCheckSquare /></a>
                             </div>
                         </td>
                     </tr>

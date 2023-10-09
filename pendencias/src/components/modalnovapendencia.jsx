@@ -1,11 +1,10 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { AiOutlineClose } from "react-icons/ai";
-import App from '../App';
 
 function ModalNovaPendencia( { fecharModal }) {
 
     return (
-            <div className=' fixed bg-[#00000080] top-0 left-0 w-full h-full z-1000'>
+            <div className='fixed bg-[#00000080] top-0 left-0 w-full h-full z-1000'>
                 <div className='bg-white w-3/4 mt-20 ml-auto mr-auto rounded p-4 shadow-modal'>
                     <form>
                         <div className='relative flex flex-col w-full pointer-events-auto'>
