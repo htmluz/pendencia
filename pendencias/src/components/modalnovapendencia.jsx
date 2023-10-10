@@ -22,9 +22,7 @@ function ModalNovaPendencia( { fecharModal }) {
         e.preventDefault();
 
         const jsonData = JSON.stringify(formData)
-        console.log(formData);
-        
-        
+           
         await fetch(API + "/pendencias/new", {
             method: 'POST',
             headers: {
@@ -36,6 +34,7 @@ function ModalNovaPendencia( { fecharModal }) {
             .then((data) => {
                 console.log(data);
             })
+            .then(fecharModal())
             .catch((error) => {
                 console.error("Erro ao enviar o form", error);
             });
@@ -131,4 +130,4 @@ function ModalNovaPendencia( { fecharModal }) {
     )
 }
 
-export default ModalNovaPendencia
+export default ModalNovaPendencia;

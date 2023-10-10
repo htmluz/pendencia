@@ -5,7 +5,6 @@ import './App.css';
 import Tabela from './components/tabela';
 import ModalNovaPendencia from './components/modalnovapendencia';
 
-
 function App() {
   const [modalNova, setModalNova] = useState(false);
 
@@ -13,6 +12,7 @@ function App() {
     setModalNova(current => !current);
   }
 
+  
   return (
     <>
       <nav className=' select-none flex flex-row justify-between max-h-10 px-2 py-2 text-sm text-[#ffffffde] bg-gradient-to-b from-[#212121]'>

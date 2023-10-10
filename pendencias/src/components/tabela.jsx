@@ -4,12 +4,12 @@ import { BiCommentDetail, BiEdit } from "react-icons/bi";
 import { AiOutlineCheckSquare } from "react-icons/ai";
 
 
-const Tabela = () => {
+function Tabela() { 
 
     const API = "http://localhost:3001";
     const [pendencias, setPendencias] = useState([]);
     const [loading, setLoading] = useState(false);
-    
+
     useEffect(() => {
         const loadPendencia = async() => {
             setLoading(true);
@@ -22,10 +22,10 @@ const Tabela = () => {
                 setLoading(false);
                 setPendencias(res);
         }
-
+   
         loadPendencia();
     }, [])
-    
+  
     if(loading) {
         return <p className='font-Inter'>Carregando pendências...</p>
     }
