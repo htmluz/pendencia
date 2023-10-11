@@ -4,6 +4,8 @@ import { AiOutlinePlus } from "react-icons/ai";
 import './App.css';
 import Tabela from './components/tabela';
 import ModalNovaPendencia from './components/modalnovapendencia';
+import Register from './components/register';
+
 
 function App() {
   const [modalNova, setModalNova] = useState(false);

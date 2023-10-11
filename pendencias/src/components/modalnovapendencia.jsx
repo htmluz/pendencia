@@ -116,6 +116,7 @@ function ModalNovaPendencia( { fecharModal }) {
                                                 Previsão: 
                                                 <input required value={formData.dateend} onChange={handleInputChange} id="dateend" name="dateend" type="datetime-local" className='font-normal px-2 transition-colors focus:outline-none focus:bg-[#dddddd] leading-9 bg-[#efefef] rounded w-full' />
                                             </label>
+                                            
                                         </div>
                                     </div>
                                     <div className='flex mt-6'>
