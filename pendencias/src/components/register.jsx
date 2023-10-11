@@ -46,95 +46,113 @@ function Register() {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+
+        setSuccess(true);
     }
 
     return (
-        <section className="bg-white w-2/6 mt-20 ml-auto mr-auto rounded p-4 pb-5 shadow-modal font-Inter font-bold">
-            <p ref={errRef} className={errMsg ? "" : "hidden"}>{errMsg}</p>
-            <div className=" pb-2 mb-2">
-                <h1 className="cursor-default text-xl">Registrar-se</h1>
-            </div>
-            <form onSubmit={handleSubmit}>
-                <label className="flex flex-row justify-between" htmlFor="user">
-                    Username:
-                    <span className={validName ? "text-[#06c258] pt-1" : "hidden"}>
-                        <AiOutlineCheck />
-                    </span>
-                    <span className={validName || !user ? "hidden" : " text-[#ff0000] pt-1"}>
-                        <AiOutlineClose />
-                    </span>
-                </label>
-                <input 
-                    type="text" 
-                    id="user"
-                    ref={userRef}
-                    autoComplete="off"
-                    onChange={(e) => setUser(e.target.value)}
-                    required
-                    onFocus={() => setUserFocus(true)}
-                    onBlur={() => setUserFocus(false)}
-                    className="font-normal px-2 transition-colors focus:outline-none focus:bg-[#dddddd] leading-9 bg-[#efefef] rounded w-full"
-                />
-                <p className={userFocus && user && !validName ? "cursor-default font-system text-sm text-center w-full font-light rounded bg-[#aaaaaa] p-1 mt-2" : "hidden"}>
-                    4 a 24 Caracteres<br />
-                    Precisa começar com uma letra e não pode conter espaço.<br />
-                </p>
-                <label className="flex flex-row justify-between pt-5" htmlFor="pwd">
-                    Senha:
-                    <span className={validPwd ? "text-[#06c258] pt-1" : "hidden"}>
-                        <AiOutlineCheck />
-                    </span>
-                    <span className={validPwd || !pwd ? "hidden" : " text-[#ff0000] pt-1"}>
-                        <AiOutlineClose />
-                    </span>
-                </label>
-                <input 
-                    type="password" 
-                    id="pwd"
-                    onChange={(e) => setPwd(e.target.value)}
-                    required
-                    onFocus={() => setPwdFocus(true)}
-                    onBlur={() => setPwdFocus(false)}
-                    className="font-normal px-2 transition-colors focus:outline-none focus:bg-[#dddddd] leading-9 bg-[#efefef] rounded w-full"
-                />
-                <p className={pwdFocus && !validPwd ? "cursor-default font-system text-sm text-center w-full font-light rounded bg-[#aaaaaa] p-1 mt-2 mb-4" : "hidden"}>
-                    8 a 24 Caracteres<br />
-                    Precisa conter pelo menos um símbolo, uma letra em caixa alta e um número.<br />
-                    Símbolos permitidos: ! @ # $ %<br />
-                </p>
+        <>
+            <section className="bg-white w-2/6 mt-20 ml-auto mr-auto rounded p-4 pb-5 shadow-modal font-Inter font-bold">
+                {success ? (
+                    <section>
+                        <p className="cursor-default text-base font-system font-thin">
+                            <a className="font-Inter font-bold">Usuário criado!<br/></a> 
+                            <span>
+                                <a className="underline" href="#">Entrar</a>
+                            </span>
+                        </p>
+                    </section>
+                ) : (
+                    <div>
+                        <p ref={errRef} className={errMsg ? "" : "hidden"}>{errMsg}</p>
+                        <div className=" pb-2 mb-2">
+                            <h1 className="cursor-default text-xl">Registrar-se</h1>
+                        </div>
+                        <form onSubmit={handleSubmit}>
+                            <label className="flex flex-row justify-between" htmlFor="user">
+                                Username:
+                                <span className={validName ? "text-[#06c258] pt-1" : "hidden"}>
+                                    <AiOutlineCheck />
+                                </span>
+                                <span className={validName || !user ? "hidden" : " text-[#ff0000] pt-1"}>
+                                    <AiOutlineClose />
+                                </span>
+                            </label>
+                            <input 
+                                type="text" 
+                                id="user"
+                                ref={userRef}
+                                autoComplete="off"
+                                onChange={(e) => setUser(e.target.value)}
+                                required
+                                onFocus={() => setUserFocus(true)}
+                                onBlur={() => setUserFocus(false)}
+                                className="font-normal px-2 transition-colors focus:outline-none focus:bg-[#dddddd] leading-9 bg-[#efefef] rounded w-full"
+                            />
+                            <p className={userFocus && user && !validName ? "cursor-default font-system text-sm text-center w-full font-light rounded bg-[#aaaaaa] p-1 mt-2" : "hidden"}>
+                                4 a 24 Caracteres<br />
+                                Precisa começar com uma letra e não pode conter espaço.<br />
+                            </p>
+                            <label className="flex flex-row justify-between pt-5" htmlFor="pwd">
+                                Senha:
+                                <span className={validPwd ? "text-[#06c258] pt-1" : "hidden"}>
+                                    <AiOutlineCheck />
+                                </span>
+                                <span className={validPwd || !pwd ? "hidden" : " text-[#ff0000] pt-1"}>
+                                    <AiOutlineClose />
+                                </span>
+                            </label>
+                            <input 
+                                type="password" 
+                                id="pwd"
+                                onChange={(e) => setPwd(e.target.value)}
+                                required
+                                onFocus={() => setPwdFocus(true)}
+                                onBlur={() => setPwdFocus(false)}
+                                className="font-normal px-2 transition-colors focus:outline-none focus:bg-[#dddddd] leading-9 bg-[#efefef] rounded w-full"
+                            />
+                            <p className={pwdFocus && !validPwd ? "cursor-default font-system text-sm text-center w-full font-light rounded bg-[#aaaaaa] p-1 mt-2 mb-4" : "hidden"}>
+                                8 a 24 Caracteres<br />
+                                Precisa conter pelo menos um símbolo, uma letra em caixa alta e um número.<br />
+                                Símbolos permitidos: ! @ # $ %<br />
+                            </p>
 
-                <label className="flex flex-row justify-between pt-5" htmlFor="confirm_pwd">
-                    Confirmar Senha:
-                    <span className={validPwd && matchPwd ? "text-[#06c258] pt-1" : "hidden"}>
-                        <AiOutlineCheck />
-                    </span>
-                    <span className={validPwd || !matchPwd ? "hidden" : " text-[#ff0000] pt-1"}>
-                        <AiOutlineClose />
-                    </span>
-                </label>
-                <input 
-                    type="password" 
-                    id="confirm_pwd"
-                    onChange={(e) => setMatchPwd(e.target.value)}
-                    required
-                    onFocus={() => setMatchFocus(true)}
-                    onBlur={() => setMatchFocus(false)}
-                    className="font-normal px-2 transition-colors focus:outline-none focus:bg-[#dddddd] leading-9 bg-[#efefef] rounded w-full"
-                />
-                <p className={matchFocus && !validMatch ? "cursor-default font-system text-sm text-center w-full font-light rounded bg-[#aaaaaa] p-1 mt-2" : "hidden"}>
-                    Precisa ser idêntico a senha.
-                </p>
-                <button className='mt-4 mb-4 transition-colors bg-[#187bcd] hover:bg-[#1167b1] active:bg-[#0d4c82] rounded px-3 py-2 w-full text-white' disabled={!validName || !vlaidPwd || !validMatch ? true : false}>
-                    Criar usuário
-                </button>
-            </form>
-            <p className="cursor-default text-base font-system font-thin">
-                Já tem uma conta?<br />
-                <span>
-                    <a className=" underline" href="#">Entre</a>
-                </span>
-            </p>
-        </section>
+                            <label className="flex flex-row justify-between pt-5" htmlFor="confirm_pwd">
+                                Confirmar Senha:
+                                <span className={validMatch && matchPwd ? "text-[#06c258] pt-1" : "hidden"}>
+                                    <AiOutlineCheck />
+                                </span>
+                                <span className={validMatch || !matchPwd ? "hidden" : " text-[#ff0000] pt-1"}>
+                                    <AiOutlineClose />
+                                </span>
+                            </label>
+                            <input 
+                                type="password" 
+                                id="confirm_pwd"
+                                onChange={(e) => setMatchPwd(e.target.value)}
+                                required
+                                onFocus={() => setMatchFocus(true)}
+                                onBlur={() => setMatchFocus(false)}
+                                className="font-normal px-2 transition-colors focus:outline-none focus:bg-[#dddddd] leading-9 bg-[#efefef] rounded w-full"
+                            />
+                            <p className={matchFocus && !validMatch ? "cursor-default font-system text-sm text-center w-full font-light rounded bg-[#aaaaaa] p-1 mt-2" : "hidden"}>
+                                Precisa ser idêntico a senha.
+                            </p>
+                            <button className='mt-4 mb-4 transition-colors bg-[#187bcd] hover:bg-[#1167b1] active:bg-[#0d4c82] rounded px-3 py-2 w-full text-white' disabled={!validName || !validPwd || !validMatch ? true : false}>
+                                Criar usuário
+                            </button>
+                        </form>
+                        <p className="cursor-default text-base font-system font-thin">
+                            Já tem uma conta?<br />
+                            <span>
+                                <a className=" underline" href="#">Entrar</a>
+                            </span>
+                        </p>
+                    </div>
+                )}
+            </section> 
+            
+        </>
     );
 }
 
