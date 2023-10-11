@@ -14,7 +14,7 @@ function Tabela() {
         const loadPendencia = async() => {
             setLoading(true);
 
-            const res = await fetch(API + "/pendencias")
+            const res = await fetch(API + "/getpendencias")
                 .then((res) => res.json())
                 .then((data) => data)
                 .catch((err) => console.log(err));
