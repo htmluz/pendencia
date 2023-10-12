@@ -17,8 +17,8 @@ function App() {
   
   return (
     <>
-    <Register />
-      {/* <nav className=' select-none flex flex-row justify-between max-h-10 px-2 py-2 text-sm text-[#ffffffde] bg-gradient-to-b from-[#212121]'>
+    {/*<Register />*/}
+      <nav className=' select-none flex flex-row justify-between max-h-10 px-2 py-2 text-sm text-[#ffffffde] bg-gradient-to-b from-[#212121]'>
          <h1 className='font-Inter font-bold cursor-default'>Pendências Monitoramento</h1>
          <a onClick={clickNovaPendencia} className='flex font-Inter font-bold cursor-default hover:bg-[#1b1b1b] transition px-1 rounded hover:text-[#eeeeeede]'>
             <AiOutlinePlus className='mr-1 mt-1 cursor-pointer'/> Nova Pendência 
@@ -37,7 +37,7 @@ function App() {
         <a className='px-1 transition rounded hover:bg-[#1b1b1b] hover:text-[#eeeeeede] fixed right-1' href=''>1</a>
         <a className='px-1 transition rounded hover:bg-[#1b1b1b] hover:text-[#eeeeeede] fixed right-5' href=''>2</a>
         <a className='px-1 transition rounded hover:bg-[#1b1b1b] hover:text-[#eeeeeede] fixed right-10' href=''>-</a>
-      </footer> */}
+      </footer>
     </>
   )
 }

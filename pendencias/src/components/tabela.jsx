@@ -25,7 +25,7 @@ function Tabela() {
    
         loadPendencia();
     }, [])
-  
+
     if(loading) {
         return <p className='font-Inter'>Carregando pendências...</p>
     }

@@ -16,13 +16,15 @@ function ModalNovaPendencia( { fecharModal }) {
                 user: ""
             }
     });
+
+    const usuario = "luiz"
     const API = "http://localhost:3001";
 
     const handleSubmit = async (e) => {
         e.preventDefault();
 
+        formData.abertura.user = usuario;
         const jsonData = JSON.stringify(formData)
-           
         await fetch(API + "/pendencias/new", {
             method: 'POST',
             headers: {
