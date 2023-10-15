@@ -1,9 +1,11 @@
 import React, { useEffect, useRef, useState } from "react";
 import { AiOutlineCheck, AiOutlineClose } from "react-icons/ai";
+import axios from "../api/axios";
+import { Link } from "react-router-dom";
 
 const USER_REGEX = /^[a-zA-Z][a-zA-Z0-9-_.]{3,23}$/;
 const PWD_REGEX = /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%]).{8,24}$/;
-
+const URL_REGISTRO = "/usuarios/new";
 
 function Register() {
     const userRef = useRef();
@@ -47,7 +49,24 @@ function Register() {
     const handleSubmit = async (e) => {
         e.preventDefault();
 
-        setSuccess(true);
+        try {
+            const response = await axios.post(URL_REGISTRO,
+                { user, pwd },
+                {
+                    header: { 'Content-type': 'application/json',},
+                    withCredentials: true
+                });
+            console.log(user)
+            console.log(pwd)
+            console.log(response.data);
+            setSuccess(true);
+        } catch (err) {
+            if (!err?.response) {
+                setErrMsg("Sem resposta do servidor");
+            } else {
+                setErrMsg("Falha ao se registrar")
+            }
+        }
     }
 
     return (
@@ -64,13 +83,13 @@ function Register() {
                     </section>
                 ) : (
                     <div>
-                        <p ref={errRef} className={errMsg ? "" : "hidden"}>{errMsg}</p>
+                        <p ref={errRef} className={errMsg ? "bg-[#ff333355] text-[#ff0000] rounded p-1 mb-2 text-center" : "hidden"}>{errMsg}</p>
                         <div className=" pb-2 mb-2">
                             <h1 className="cursor-default text-xl">Registrar-se</h1>
                         </div>
                         <form onSubmit={handleSubmit}>
                             <label className="flex flex-row justify-between" htmlFor="user">
-                                Username:
+                                Usuário:
                                 <span className={validName ? "text-[#06c258] pt-1" : "hidden"}>
                                     <AiOutlineCheck />
                                 </span>
@@ -145,7 +164,7 @@ function Register() {
                         <p className="cursor-default text-base font-system font-thin">
                             Já tem uma conta?<br />
                             <span>
-                                <a className=" underline" href="#">Entrar</a>
+                                <Link to="/login" className=" underline">Entrar</Link>
                             </span>
                         </p>
                     </div>
