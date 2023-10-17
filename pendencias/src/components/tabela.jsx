@@ -19,7 +19,7 @@ function Tabela() {
     const [loading, setLoading] = useState(false);
     const [modalNova, setModalNova] = useState(false);
     const [idOut, setIdOut] = useState(null);
-    const [modalFechar, setModalFechar] = useState(false);
+    const [modalFechar, setModalFechar] = useState(true);
 
     useEffect(() => {
         const loadPendencia = async () => {
@@ -41,9 +41,11 @@ function Tabela() {
     
 
     function clickEncerrarPendencia(event) { //tenho que tirar a função de setar o id dessa função se não ele não vai fechar o modal
-        const id = event.currentTarget.dataset.id;
         setModalFechar(current => !current)
-        setIdOut(id);
+        if (modalFechar) {
+            const id = event.currentTarget.dataset.id;
+            setIdOut(id);
+        }
         
     }
 
@@ -110,7 +112,7 @@ function Tabela() {
             <Footer />
             <div>
             { modalNova ? <ModalNovaPendencia fecharModal={clickNovaPendencia} /> : null}
-            { modalFechar ? <ModalFecharPendencia closeModal={clickEncerrarPendencia} id={idOut}/> : null }
+            { !modalFechar ? <ModalFecharPendencia closeModal={clickEncerrarPendencia} id={idOut}/> : null }
             </div>
       </>
     )
