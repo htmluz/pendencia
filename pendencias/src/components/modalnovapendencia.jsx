@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { AiOutlineClose } from "react-icons/ai";
 
 function ModalNovaPendencia( { fecharModal }) {
@@ -9,6 +9,8 @@ function ModalNovaPendencia( { fecharModal }) {
         dateinit: "",
         dateend: "",
         dateatt: "",
+        taskid: "",
+        incidenturl: "",
         abertura: {
                 user: ""
             },

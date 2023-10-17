@@ -7,6 +7,10 @@ import ModalNovaPendencia from './modalnovapendencia';
 import { Link } from 'react-router-dom';
 import useAxiosPrivate from '../Hooks/useAxiosPrivate';
 import useAuth from '../Hooks/useAuth';
+import Footer from './footer';
+import { BsClipboard } from "react-icons/bs"
+import ModalFecharPendencia from './modalFecharPendencia';
+
 
 function Tabela() { 
     const { auth } = useAuth();
@@ -14,6 +18,8 @@ function Tabela() {
     const [pendencias, setPendencias] = useState([]);
     const [loading, setLoading] = useState(false);
     const [modalNova, setModalNova] = useState(false);
+    const [idOut, setIdOut] = useState(null);
+    const [modalFechar, setModalFechar] = useState(false);
 
     useEffect(() => {
         const loadPendencia = async () => {
@@ -30,10 +36,16 @@ function Tabela() {
     }, [])
 
     if(loading) {
-        return <p className='font-Inter'>Carregando pendências...</p>
+        return <p className='p-2 font-Inter text-[#ffffffde] font-bold'>Carregando pendências...</p>
     }
-
     
+
+    function clickEncerrarPendencia(event) { //tenho que tirar a função de setar o id dessa função se não ele não vai fechar o modal
+        const id = event.currentTarget.dataset.id;
+        setModalFechar(current => !current)
+        setIdOut(id);
+        
+    }
 
     const clickNovaPendencia = () => {
       setModalNova(current => !current);
@@ -72,17 +84,22 @@ function Tabela() {
                                 <td>{item.dateinit}</td>
                                 <td>{item.dateend}</td>
                                 <td>{item.dateatt}</td>
-                                <td>
-                                    <div>
+                                <td>{item.taskid ? (
+                                    <div onClick={() => {navigator.clipboard.writeText(item.taskid)}} className='flex hover:text-[#aaaaaa]'>
+                                        <BsClipboard className='mt-1 mr-1'/>
                                         {item.taskid}
                                     </div>
+                                ) : null}
                                 </td>
-                                <td>{item.incidenturl}</td>
+                                <td>{item.incidenturl ? (
+                                    <a className='underline hover:text-[#aaaaaa]' href={item.incidenturl} target='_blank'>incidente</a>
+                                    ) : null}
+                                </td>
                                 <td className='pr-0'>
                                     <div className='flex flex-row pr-0'>
-                                        <a href=""className='cursor-default' ><BiCommentDetail /> </a>
-                                        <a href=""className='cursor-default'><BiEdit /> </a>
-                                        <a href=""className='cursor-default'><AiOutlineCheckSquare /></a>
+                                        <a className='cursor-default' ><BiCommentDetail /> </a>
+                                        <a data-id={item.id} className='cursor-default'><BiEdit /> </a>
+                                        <a data-id={item.id} onClick={clickEncerrarPendencia} className='cursor-default'><AiOutlineCheckSquare /></a>
                                     </div>
                                 </td>
                             </tr>
@@ -90,14 +107,10 @@ function Tabela() {
                     </tbody>
                 </table>
             </div>
-            <footer className='text-[#ffffffde] block font-system bg-gradient-to-t from-[#212121] fixed w-full bottom-0'>
-                <a className='float-left p-1 hover:bg-[#333333] transition-all rounded' href=''>Em andamento</a>
-                <a className='float-left p-1 hover:bg-[#333333] transition-all rounded' href=''>Concluídas</a>
-                <a className='float-right p-1 hover:bg-[#333333] transition-all rounded' href=''>Tipos</a>
-                <Link className='float-right p-1 hover:bg-[#333333] transition-all rounded' to="/usuarios">Usuários</Link>
-            </footer>
+            <Footer />
             <div>
             { modalNova ? <ModalNovaPendencia fecharModal={clickNovaPendencia} /> : null}
+            { modalFechar ? <ModalFecharPendencia closeModal={clickEncerrarPendencia} id={idOut}/> : null }
             </div>
       </>
     )
