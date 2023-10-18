@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { AiOutlineClose } from "react-icons/ai";
+import useAxiosPrivate from '../Hooks/useAxiosPrivate';
 
 function ModalNovaPendencia( { fecharModal }) {
     const [formData, setFormData] = useState({
@@ -18,11 +19,38 @@ function ModalNovaPendencia( { fecharModal }) {
                 user: ""
             }
     });
+    const [tipos, setTipos] = useState();
+    const axiosPrivate = useAxiosPrivate();
 
     const usuario = "luiz"
     const API = "http://localhost:3001";
 
-    const handleSubmit = async (e) => {
+    useEffect(() => {
+        const controller = new AbortController();
+        let isMounted = true;
+
+
+        const getTipos = async () => {
+            try {
+                const response = await axiosPrivate.get("/tipos/get", {
+                    signal: controller.signal});
+                console.log(response.data)
+                isMounted && setTipos(response.data);
+            } catch (err) {
+                console.log(err)
+            }
+        }
+        getTipos();
+        console.log(tipos)
+
+        return () => {
+            isMounted = false;
+            controller.abort();
+        }
+    }, [])
+
+
+    const handleSubmit = async (e) => {  // trocar pra axios quando terminar de implementar os tokens
         e.preventDefault();
 
         formData.abertura.user = usuario;
@@ -35,9 +63,6 @@ function ModalNovaPendencia( { fecharModal }) {
             body: jsonData,
         })
             .then((response) => response.json())
-            .then((data) => {
-                console.log(data);
-            })
             .then(fecharModal())
             .catch((error) => {
                 console.error("Erro ao enviar o form", error);
@@ -77,7 +102,10 @@ function ModalNovaPendencia( { fecharModal }) {
                                         <div className='w-48p mr-auto'>
                                             <label htmlFor="tipo">
                                                 Tipo de Pendência:
-                                                <input required value={formData.tipo} onChange={handleInputChange} id="tipo" name="tipo" className='font-normal px-2 transition-colors focus:outline-none focus:bg-[#dddddd] leading-9 bg-[#efefef] rounded w-full' />
+                                                    <select required value={formData.tipo} onChange={handleInputChange} id="tipo" name="tipo" className='font-normal px-2 transition-colors focus:outline-none focus:bg-[#dddddd] leading-9 bg-[#efefef] rounded w-full'>
+                                                        <option value=''></option>
+                                                        {tipos && tipos.map((tipo, i) => (<option key={i} value={tipo.tipo}>{tipo.tipo}</option>))}
+                                                    </select>
                                             </label>
                                         </div>
                                         <div className=' w-48p'>

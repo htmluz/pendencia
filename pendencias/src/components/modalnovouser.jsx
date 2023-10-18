@@ -38,20 +38,20 @@ function ModalNovoUser( { fecharModal }) {
             <div className='bg-white w-1/4 mt-20 ml-auto mr-auto rounded p-4 pb-0 shadow-modal'>
                     <div className='relative flex flex-col w-full pointer-events-auto p-5 pb-8'>
                         <div className='font-Inter font-bold text-lg flex justify-between align-top text-right mb-2 pb-2'>
-                            <h5 className=" select-none cursor-default">Novo Tipo de Pendência</h5>
+                            <h5 className=" select-none cursor-default">Novo Usuário</h5>
                             <button onClick={fecharModal}  className='  hover:text-[15px] transition-all' type="button">
                                 <AiOutlineClose />
                             </button>
                         </div>
                         <form onSubmit={handleSubmit} className="font-system font-semibold" method='POST'>
                             <div className=" pb-3">
-                                <label htmlFor="user">
+                                <label className="select-none" htmlFor="user">
                                     Usuário
                                     <input required id="user" onChange={handleInputChange} name="user" type="text" className='font-normal px-2 mt-2 transition-colors focus:outline-none focus:bg-[#dddddd] leading-9 bg-[#efefef] rounded w-full' />
                                 </label>
                             </div>
                             <div className=" pb-3">
-                                <label htmlFor="pwd">
+                                <label className="select-none" htmlFor="pwd">
                                     Senha
                                     <input required id="pwd" onChange={handleInputChange} name="pwd" type="password" className='font-normal px-2 mt-2 transition-colors focus:outline-none focus:bg-[#dddddd] leading-9 bg-[#efefef] rounded w-full' />
                                 </label>
