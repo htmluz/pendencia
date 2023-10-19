@@ -1,29 +1,29 @@
 import React, { useState, useEffect } from 'react';
 import { AiOutlineClose } from "react-icons/ai";
 import useAxiosPrivate from '../Hooks/useAxiosPrivate';
-import Tabela from './tabela';
 
-function ModalNovaPendencia( { fecharModal }) {
+function ModalEditPendencia( { fecharModal, penden }) {
     const [formData, setFormData] = useState({
-        titulo: "",
-        tipo: "",
-        responsavel: "",
-        dateinit: "",
-        dateend: "",
-        dateatt: "",
-        taskid: "",
-        incidenturl: "",
+        titulo: penden.titulo,
+        tipo: penden.tipo,
+        responsavel: penden.responsavel,
+        dateinit: penden.dateinit,
+        dateend: penden.dateend,
+        dateatt: penden.dateatt,
+        taskid: penden.taskid,
+        incidenturl: penden.incidenturl,
         abertura: {
-                user: ""
+                user: penden.abertura.user
             },
         fechamento: {
-                user: ""
+                user: penden.fechamento.user
             }
     });
     const [tipos, setTipos] = useState();
     const axiosPrivate = useAxiosPrivate();
 
     const usuario = "luiz"
+    const API = "http://localhost:3001";
 
     useEffect(() => {
         const controller = new AbortController();
@@ -47,22 +47,39 @@ function ModalNovaPendencia( { fecharModal }) {
         }
     }, [])
 
+
     const handleSubmit = async (e) => {
         e.preventDefault();
-        formData.abertura.user = usuario;
         try {
-            const response = await axiosPrivate.post('/pendencias/new', formData, {
+            const response = await axiosPrivate.put(`/pendencias/edit/${penden.id}`, formData, {
                 headers: {
                     'Content-Type': 'application/json',
-                },
+                }
             })
             fecharModal();
         } catch (err) {
             console.log(err)
         }
-        
     }
 
+    // const handleSubmit = async (e) => {  // trocar pra axios quando terminar de implementar os tokens
+    //     e.preventDefault();
+
+    //     formData.abertura.user = usuario;
+    //     const jsonData = JSON.stringify(formData)
+    //     await fetch(API + "/pendencias/edit/:id", {
+    //         method: 'PUT',
+    //         headers: {
+    //             'Content-Type': 'application/json',
+    //         },
+    //         body: jsonData,
+    //     })
+    //         .then((response) => response.json())
+    //         .then(fecharModal())
+    //         .catch((error) => {
+    //             console.error("Erro ao enviar o form", error);
+    //         });
+    // };
 
     const handleInputChange = (e) => {
         const { name, value } = e.target;
@@ -74,12 +91,12 @@ function ModalNovaPendencia( { fecharModal }) {
                 <div className='bg-white w-3/4 mt-20 ml-auto mr-auto rounded p-4 pb-0 shadow-modal'>
                         <div className='relative flex flex-col w-full pointer-events-auto p-5 pb-8'>
                             <div className='font-Inter font-bold text-lg flex justify-between align-top text-right mb-2 border-b-2 pb-3 border-[#efefef]'>
-                                <h5>Adicionar Pendência</h5>
+                                <h5>Editar Pendência</h5>
                                 <button onClick={fecharModal} className='hover:text-[15px] transition-all' type="button">
                                     <AiOutlineClose />
                                 </button>
                             </div>
-                            <form method='POST' onSubmit={handleSubmit}>
+                            <form method='PUT' onSubmit={handleSubmit}>
                                 <div className='flex flex-col space-between font-system font-semibold'>
                                     <div className='py-2'>
                                         <label className='' htmlFor="titulo">
@@ -158,4 +175,4 @@ function ModalNovaPendencia( { fecharModal }) {
     )
 }
 
-export default ModalNovaPendencia;
+export default ModalEditPendencia;

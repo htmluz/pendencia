@@ -4,9 +4,8 @@ function Footer() {
 
     return (
         <footer className='text-[#ffffffde] block font-system bg-gradient-to-t from-[#212121] fixed w-full bottom-0'>
-            <Link className='float-left p-1 hover:bg-[#333333] transition-all rounded' to="/pendencias">Em andamento</ Link>
-            <Link className='float-left p-1 hover:bg-[#333333] transition-all rounded' to="/pendencias">Concluídas</Link>
-            <Link className='float-right p-1 hover:bg-[#333333] transition-all rounded' to="/gerencia">Gerência</Link>
+            <Link className='mb-1 float-left ml-1 text-sm font-medium cursor-default select-none px-[10px] p-[3px] bg-[#343434] hover:bg-[#1b1b1b] transition-all rounded-md' to="/pendencias">Pendencias</ Link>
+            <Link className='mb-1 float-right mr-1 text-sm font-medium cursor-default select-none px-[10px] p-[3px] bg-[#343434] hover:bg-[#1b1b1b] transition-all rounded-md' to="/gerencia">Gerência</Link>
         </footer>
 )};
 

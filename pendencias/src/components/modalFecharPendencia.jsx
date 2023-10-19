@@ -16,8 +16,6 @@ function ModalFecharPendencia( { closeModal, id }) {
     const handleInputChange = (e) => {
         const { name, value } = e.target;
         setFormData({...formData, fechamento: { [name]: value }});
-        console.log(id)
-        console.log(formData);
     };
 
     const handleSubmit = async (e) => {
@@ -25,7 +23,6 @@ function ModalFecharPendencia( { closeModal, id }) {
         const user = "luiz";
         formData.fechamento.user = user;
         try {
-            console.log(formData);
             const response = await axiosPrivate.put(`/pendencias/complete/${id}`, formData, {
                 headers: {
                     'Content-Type': 'application/json',
