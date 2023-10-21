@@ -22,8 +22,6 @@ function ModalEditPendencia( { fecharModal, penden }) {
     const [tipos, setTipos] = useState();
     const axiosPrivate = useAxiosPrivate();
 
-    const usuario = "luiz"
-    const API = "http://localhost:3001";
 
     useEffect(() => {
         const controller = new AbortController();
@@ -62,24 +60,6 @@ function ModalEditPendencia( { fecharModal, penden }) {
         }
     }
 
-    // const handleSubmit = async (e) => {  // trocar pra axios quando terminar de implementar os tokens
-    //     e.preventDefault();
-
-    //     formData.abertura.user = usuario;
-    //     const jsonData = JSON.stringify(formData)
-    //     await fetch(API + "/pendencias/edit/:id", {
-    //         method: 'PUT',
-    //         headers: {
-    //             'Content-Type': 'application/json',
-    //         },
-    //         body: jsonData,
-    //     })
-    //         .then((response) => response.json())
-    //         .then(fecharModal())
-    //         .catch((error) => {
-    //             console.error("Erro ao enviar o form", error);
-    //         });
-    // };
 
     const handleInputChange = (e) => {
         const { name, value } = e.target;
@@ -146,19 +126,19 @@ function ModalEditPendencia( { fecharModal, penden }) {
                                         <div className='w-30p mr-auto'>
                                             <label htmlFor="dateinit">
                                                 Data/hora de Início:
-                                                <input required value={formData.dateinit} onChange={handleInputChange} id="dateinit" name="dateinit" type="datetime-local" className='font-normal px-2 transition-colors focus:outline-none focus:bg-[#dddddd] leading-9 bg-[#efefef] rounded w-full' />
+                                                <input required value={formData.dateinit} onChange={handleInputChange} id="dateinit" name="dateinit" type="datetime-local" min="2023-01-01T00:00" max="2666-01-01T00:00" className='font-normal px-2 transition-colors focus:outline-none focus:bg-[#dddddd] leading-9 bg-[#efefef] rounded w-full' />
                                             </label>
                                         </div>
                                         <div className='w-30p mr-auto'>
                                             <label htmlFor="dateatt">
                                                 Atualizar em:
-                                                <input required value={formData.dateatt} onChange={handleInputChange} id="dateatt" name="dateatt" type="datetime-local" className='font-normal px-2 transition-colors focus:outline-none focus:bg-[#dddddd] leading-9 bg-[#efefef] rounded w-full' />
+                                                <input required value={formData.dateatt} onChange={handleInputChange} id="dateatt" name="dateatt" type="datetime-local" min="2023-01-01T00:00" max="2666-01-01T00:00" className='font-normal px-2 transition-colors focus:outline-none focus:bg-[#dddddd] leading-9 bg-[#efefef] rounded w-full' />
                                             </label>
                                         </div>
                                         <div className='w-30p'>
                                             <label htmlFor="dateend">
                                                 Previsão: 
-                                                <input required value={formData.dateend} onChange={handleInputChange} id="dateend" name="dateend" type="datetime-local" className='font-normal px-2 transition-colors focus:outline-none focus:bg-[#dddddd] leading-9 bg-[#efefef] rounded w-full' />
+                                                <input required value={formData.dateend} onChange={handleInputChange} id="dateend" name="dateend" type="datetime-local" min="2023-01-01T00:00" max="2666-01-01T00:00" className='font-normal px-2 transition-colors focus:outline-none focus:bg-[#dddddd] leading-9 bg-[#efefef] rounded w-full' />
                                             </label>
                                             
                                         </div>

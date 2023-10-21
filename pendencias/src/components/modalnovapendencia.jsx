@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { AiOutlineClose } from "react-icons/ai";
 import useAxiosPrivate from '../Hooks/useAxiosPrivate';
-import Tabela from './tabela';
 
 function ModalNovaPendencia( { fecharModal }) {
     const [formData, setFormData] = useState({
@@ -60,7 +59,6 @@ function ModalNovaPendencia( { fecharModal }) {
         } catch (err) {
             console.log(err)
         }
-        
     }
 
 
@@ -129,19 +127,19 @@ function ModalNovaPendencia( { fecharModal }) {
                                         <div className='w-30p mr-auto'>
                                             <label htmlFor="dateinit">
                                                 Data/hora de Início:
-                                                <input required value={formData.dateinit} onChange={handleInputChange} id="dateinit" name="dateinit" type="datetime-local" className='font-normal px-2 transition-colors focus:outline-none focus:bg-[#dddddd] leading-9 bg-[#efefef] rounded w-full' />
+                                                <input required value={formData.dateinit} onChange={handleInputChange} min="2023-01-01T00:00" max="2666-01-01T00:00" id="dateinit" name="dateinit" type="datetime-local" className='font-normal px-2 transition-colors focus:outline-none focus:bg-[#dddddd] leading-9 bg-[#efefef] rounded w-full' />
                                             </label>
                                         </div>
                                         <div className='w-30p mr-auto'>
                                             <label htmlFor="dateatt">
                                                 Atualizar em:
-                                                <input required value={formData.dateatt} onChange={handleInputChange} id="dateatt" name="dateatt" type="datetime-local" className='font-normal px-2 transition-colors focus:outline-none focus:bg-[#dddddd] leading-9 bg-[#efefef] rounded w-full' />
+                                                <input required value={formData.dateatt} onChange={handleInputChange} min="2023-01-01T00:00" max="2666-01-01T00:00" id="dateatt" name="dateatt" type="datetime-local" className='font-normal px-2 transition-colors focus:outline-none focus:bg-[#dddddd] leading-9 bg-[#efefef] rounded w-full' />
                                             </label>
                                         </div>
                                         <div className='w-30p'>
                                             <label htmlFor="dateend">
                                                 Previsão: 
-                                                <input required value={formData.dateend} onChange={handleInputChange} id="dateend" name="dateend" type="datetime-local" className='font-normal px-2 transition-colors focus:outline-none focus:bg-[#dddddd] leading-9 bg-[#efefef] rounded w-full' />
+                                                <input required value={formData.dateend} onChange={handleInputChange} min="2023-01-01T00:00" max="2666-01-01T00:00" id="dateend" name="dateend" type="datetime-local" className='font-normal px-2 transition-colors focus:outline-none focus:bg-[#dddddd] leading-9 bg-[#efefef] rounded w-full' />
                                             </label>
                                             
                                         </div>

@@ -1,37 +1,40 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import { useState, useEffect, useReducer } from 'react'
+import ReactPaginate from 'react-paginate';
 import { BiCommentDetail, BiEdit } from "react-icons/bi";
 import { AiOutlineCheckSquare } from "react-icons/ai";
 import { AiOutlinePlus } from "react-icons/ai";
-import ModalNovaPendencia from './modalnovapendencia';
-import { Link } from 'react-router-dom';
-import useAxiosPrivate from '../Hooks/useAxiosPrivate';
-import useAuth from '../Hooks/useAuth';
 import { BsClipboard } from "react-icons/bs"
+import ModalAndamento from './modalandamento';
+import ModalNovaPendencia from './modalnovapendencia';
 import ModalFecharPendencia from './modalFecharPendencia';
 import ModalEditPendencia from './modaleditpendencia';
-import ReactPaginate from 'react-paginate';
+import TableAndamentos from './tableandamentos';
+import useAxiosPrivate from '../Hooks/useAxiosPrivate';
+import useAuth from '../Hooks/useAuth';
+
+
 
 function Tabela() { 
     const { auth } = useAuth();
     const axiosPrivate = useAxiosPrivate();
-    const [pendencias, setPendencias] = useState([]);
-    const [loading, setLoading] = useState(false);
-    const [modalNova, setModalNova] = useState(false);
     const [idOut, setIdOut] = useState(null);
+    const [loading, setLoading] = useState(false);
+    const [position, setPosition] = useState({ top: 0, right: 0 });
+    const [modalNova, setModalNova] = useState(false);
+    const [isChecked, setIsChecked] = useState(false);
+    const [pendencias, setPendencias] = useState([]);
+    const [modalAndam, setModalAndam] = useState(true);
+    const [totalPages, setTotalPages] = useState(0);
     const [modalFechar, setModalFechar] = useState(true);
     const [modalEditar, setModalEditar] = useState(true);
-    const [pendenciaEdit, setPendenciaEdit] = useState(null);
-    const [isChecked, setIsChecked] = useState(false);
     const [currentPage, setCurrentPage] = useState(0);
-    const [totalPages, setTotalPages] = useState(0);
+    const [pendenciaEdit, setPendenciaEdit] = useState(null);
+    const [isElementVisible, setElementVisible] = useState(false);
     const [ignored, forceUpdate] = useReducer(x => + 1, 0);
-
     const itemsPerPage = 31;
 
-    
-    const pendenciasFinalizadas = pendencias.filter((pendencia) => pendencia.complete == true);
-    const pendenciasAbertas = pendencias.filter((pendencia) => pendencia.complete == false);
 
     useEffect(() => {
         const loadPendencia = async () => {
@@ -47,8 +50,26 @@ function Tabela() {
         loadPendencia();
     }, [ignored]) //por enquanto ele só vai atualizar o componente baseado nesse [ignore], pra frente pegar a resposta do post do modal nova pendencia e inserir na table
     
+    const pendenciasFinalizadas = pendencias.filter((pendencia) => pendencia.complete == true);
+    const pendenciasAbertas = pendencias.filter((pendencia) => pendencia.complete == false);
 
-    useEffect(() => {   
+
+    const handleMouseOver = (event) => { //mostra a tabela de andamentos
+        const { clientX, clientY } = event;
+        setPosition({ top: clientY, right: clientX});
+        setElementVisible(true);
+        setarId(event.currentTarget.dataset.id); 
+    }
+
+    const handleMouseOver2 = (event) => { //deixa a tabela ativa com o mouse em cima da div, passado pro componente de tabela
+        setElementVisible(true);
+    }
+
+    const handleMouseOut = () => { //remove a tabela de andamentos
+        setElementVisible(false);
+    }
+
+    useEffect(() => {           //seta a quantia de paginas
         if (isChecked) {
             setTotalPages(Math.ceil(pendenciasFinalizadas.length / itemsPerPage))
         } else {
@@ -59,53 +80,63 @@ function Tabela() {
     const startIndex = currentPage * itemsPerPage;
     const endIndex = startIndex + itemsPerPage;
     const pendenciasabertaspag = pendenciasAbertas.slice(startIndex, endIndex);
-    const pendenciasfinalizadaspag = pendenciasFinalizadas.slice(startIndex, endIndex);
+    const pendenciasfinalizadaspag = pendenciasFinalizadas.slice(startIndex, endIndex); //little math pra saber onde vai começar a mostrar as pendencias
 
-    const handlePageChange = (selectedPage) => {
+    const handlePageChange = (selectedPage) => { 
         setCurrentPage(selectedPage.selected);
     };
 
-    if(loading) {
+    if(loading) { //enquanto carrega a tabela de pendências mostra o texto
         return <p className='p-2 font-Inter text-[#ffffffde] font-bold'>Carregando pendências...</p>
     }
     
-    const handleCheckboxChange = () => {
+    const handleCheckboxChange = () => { //troca o valor entre pendencias concluidas e em andamento
         setIsChecked(!isChecked);
     }
 
-    function setarId(id) {
+    function setarId(id) {  //função usada pra enviar id para os componentes que precisa, modal editar, modal fechar e tabela de andamentos
         setIdOut(id)
         return idOut
     }
 
-    function clickEncerrarPendencia(event) { 
+    function clickEncerrarPendencia(event) {  
         setModalFechar(current => !current)
         if (modalFechar) {
-            setarId(event.currentTarget.dataset.id)
+            setarId(event.currentTarget.dataset.id);
+            
         };
     }
 
     function clickEditarPendencia(event) {
         if (modalEditar) {
-            const idedit = event.currentTarget.dataset.id;
+            const idedit = event.currentTarget.dataset.id; //seto o id primeiro numa variavel pra usar ele dentro do if ainda
             setarId(idedit);
-            const pendenciabyId = pendencias.find((pendencia) => pendencia.id == idedit);
-            setPendenciaEdit(pendenciabyId);
+            const pendenciabyId = pendencias.find((pendencia) => pendencia.id == idedit); //acho a pendencia pelo id 
+            setPendenciaEdit(pendenciabyId);                //passo a pendencia que encontrei com os values ja pra preencher o modal
+
         }
         setModalEditar(current => !current);
+    }
+
+    function clickAndamentoPendencia(event) {
+        setModalAndam(current => !current)
+        if (modalAndam) {
+            setarId(event.currentTarget.dataset.id)
+        }
     }
 
 
     const clickNovaPendencia = () => {
       setModalNova(current => !current);
       if (modalNova) {
-        forceUpdate()
+        forceUpdate(); //atualizando a tabela do jeito errado, usar a response do modal pra montar uma nova pendencia
       }
     }
   
     function formataData(date) {
         date = date.replace(/T/g, ' ');
-        date = date.replace(/-/g , '/')
+        date = date.replace(/-/g , '/');
+        date = date.replace(/:[^:]*$/, "");
         return date;
     } 
 
@@ -175,7 +206,14 @@ function Tabela() {
                                 </td>
                                 <td className='pr-0'>
                                     <div className='flex flex-row pr-0'>
-                                        <a className='cursor-default' ><BiCommentDetail /> </a>
+                                        <a 
+                                            onMouseOver={item.andamento.length > 0 ? handleMouseOver : null }
+                                            onMouseLeave={handleMouseOut}
+                                            data-id={item.id} 
+                                            onClick={item.andamento.length > 0 ? clickAndamentoPendencia : null} 
+                                            className={`cursor-default ${item.andamento.length > 0 ? 'hover:text-[#aaaaaa]' : 'text-[#666666]'}`} >
+                                            <BiCommentDetail /> 
+                                        </a>
                                         <a data-id={item.id} onClick={clickEditarPendencia} className='cursor-default hover:text-[#aaaaaa] transition-all'><BiEdit /> </a>
                                         <a data-id={item.id} onClick={clickEncerrarPendencia} className='cursor-default hover:text-[#aaaaaa] transition-all'><AiOutlineCheckSquare /></a>
                                     </div>
@@ -185,6 +223,7 @@ function Tabela() {
                     </tbody>
                 </table>
             </div>
+            {isElementVisible ? <TableAndamentos handleMouseOver={handleMouseOver2} handleMouseOut={handleMouseOut} top={position.top} id={idOut} pendencias={pendenciasabertaspag} /> : null}
             <footer className='text-[#ffffffde] flex justify-between font-system bg-gradient-to-t from-[#212121] fixed w-full bottom-0 pb-0' >
                 <label className='mb-1 ml-1 relative inline-flex cursor-default select-none items-center justify-center rounded-md bg-[#343434] p-[3px] '>
                     <input 
@@ -205,7 +244,7 @@ function Tabela() {
                         className='flex flex-row bg-[#343434] rounded-md' 
                         pageCount={totalPages} 
                         onPageChange={handlePageChange} 
-                        forcePage={currentPage} 
+                        // forcePage={currentPage} 
                         previousLabel={"<"}
                         previousClassName='hover:bg-[#292929] transition-all rounded w-[15px]'
                         previousLinkClassName='cursor-default'
@@ -224,6 +263,7 @@ function Tabela() {
             { modalNova ? <ModalNovaPendencia fecharModal={clickNovaPendencia} /> : null}
             { !modalFechar ? <ModalFecharPendencia closeModal={clickEncerrarPendencia} id={idOut}/> : null }
             { !modalEditar ? <ModalEditPendencia fecharModal={clickEditarPendencia} penden={pendenciaEdit}/> : null}
+            { !modalAndam ? <ModalAndamento closeModal={clickAndamentoPendencia} id={idOut}/> : null }
             </div>
       </>
     )
