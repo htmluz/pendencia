@@ -1,8 +1,11 @@
 import { AiOutlineClose } from "react-icons/ai";
 import { useState } from "react";
 import useAxiosPrivate from "../Hooks/useAxiosPrivate";
+import useAuth from '../Hooks/useAuth';
+import { axiosBitrix } from "../api/bitrix";
 
-function ModalFecharPendencia( { closeModal, id }) {
+function ModalFecharPendencia( { closeModal, id, idtask }) {
+    const { auth } = useAuth();
     const [formData, setFormData] = useState({
         fechamento: {
             user: "",
@@ -11,7 +14,15 @@ function ModalFecharPendencia( { closeModal, id }) {
     });
     const axiosPrivate = useAxiosPrivate();
 
-
+    const BitrixCall = (taskid) => {
+        console.log(taskid);
+        try {
+            const response = axiosBitrix.get(`/tasks.task.complete.json?taskId=${taskid}`)
+            console.log(response);
+        } catch (err) {
+            console.log(err);
+        }
+    }
 
     const handleInputChange = (e) => {
         const { name, value } = e.target;
@@ -20,14 +31,14 @@ function ModalFecharPendencia( { closeModal, id }) {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        const user = "luiz";
-        formData.fechamento.user = user;
+        formData.fechamento.user = auth.user;
         try {
             const response = await axiosPrivate.put(`/pendencias/complete/${id}`, formData, {
                 headers: {
                     'Content-Type': 'application/json',
                 },
             })
+            BitrixCall(idtask);
             closeModal();
 
         } catch (err) {

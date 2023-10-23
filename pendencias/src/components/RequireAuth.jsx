@@ -7,7 +7,7 @@ const RequireAuth = () => {
 
     return (
         auth?.user
-            ? <Navigate to="/pendencias" />
+            ? <Outlet />
             : <Navigate to="/login" state={{ from: location }} replace />
     );
 }

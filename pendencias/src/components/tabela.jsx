@@ -10,6 +10,7 @@ import ModalAndamento from './modalandamento';
 import ModalNovaPendencia from './modalnovapendencia';
 import ModalFecharPendencia from './modalFecharPendencia';
 import ModalEditPendencia from './modaleditpendencia';
+import ModalDetalhePendencia from './modaldetalhependencia';
 import TableAndamentos from './tableandamentos';
 import useAxiosPrivate from '../Hooks/useAxiosPrivate';
 import useAuth from '../Hooks/useAuth';
@@ -27,32 +28,36 @@ function Tabela() {
     const [pendencias, setPendencias] = useState([]);
     const [modalAndam, setModalAndam] = useState(true);
     const [totalPages, setTotalPages] = useState(0);
+    const [currentPage, setCurrentPage] = useState(0);
     const [modalFechar, setModalFechar] = useState(true);
     const [modalEditar, setModalEditar] = useState(true);
-    const [currentPage, setCurrentPage] = useState(0);
+    const [modalDetalhe, setModalDetalhe] = useState(true);
     const [pendenciaEdit, setPendenciaEdit] = useState(null);
+    const [pendenciaFechar, setPendenciaFechar] = useState(null);
+    const [pendenciaDetalhe, setPendenciaDetalhe] = useState(null);
     const [isElementVisible, setElementVisible] = useState(false);
-    const [ignored, forceUpdate] = useReducer(x => + 1, 0);
     const itemsPerPage = 31;
 
-
+ 
     useEffect(() => {
-        const loadPendencia = async () => {
-            setLoading(true);
-            try {
-                const response = await axiosPrivate.get('/getpendencias');
-                setLoading(false);
-                setPendencias(response.data);
-            } catch (err) {
-                console.log(err)
-            }
-        }
         loadPendencia();
-    }, [ignored]) //por enquanto ele só vai atualizar o componente baseado nesse [ignore], pra frente pegar a resposta do post do modal nova pendencia e inserir na table
+    }, []) 
     
+
     const pendenciasFinalizadas = pendencias.filter((pendencia) => pendencia.complete == true);
     const pendenciasAbertas = pendencias.filter((pendencia) => pendencia.complete == false);
 
+
+    const loadPendencia = async () => {
+        setLoading(true);
+        try {
+            const response = await axiosPrivate.get('/getpendencias');
+            setLoading(false);
+            setPendencias(response.data);
+        } catch (err) {
+            console.log(err)
+        }
+    }
 
     const handleMouseOver = (event) => { //mostra a tabela de andamentos
         const { clientX, clientY } = event;
@@ -102,18 +107,27 @@ function Tabela() {
     function clickEncerrarPendencia(event) {  
         setModalFechar(current => !current)
         if (modalFechar) {
-            setarId(event.currentTarget.dataset.id);
-            
-        };
+            const idedit = event.currentTarget.dataset.id;
+            setarId(idedit);
+            let pendenciabyId = pendencias.find((pendencia) => pendencia.id == idedit);
+            pendenciabyId = pendenciabyId.taskid;
+            setPendenciaFechar(pendenciabyId);
+        } else {
+            loadPendencia();
+        }
     }
 
     function clickEditarPendencia(event) {
         if (modalEditar) {
             const idedit = event.currentTarget.dataset.id; //seto o id primeiro numa variavel pra usar ele dentro do if ainda
             setarId(idedit);
-            const pendenciabyId = pendencias.find((pendencia) => pendencia.id == idedit); //acho a pendencia pelo id 
+            let pendenciabyId = pendencias.find((pendencia) => pendencia.id == idedit); //acho a pendencia pelo id 
+            pendenciabyId.dateatt = formataDataEdit(pendenciabyId.dateatt);  //formatando pra preencher o campo datetime-local, tá bugando a hora que edita ele edita na tabela tb
+            pendenciabyId.dateend = formataDataEdit(pendenciabyId.dateend);
+            pendenciabyId.dateinit = formataDataEdit(pendenciabyId.dateinit);
             setPendenciaEdit(pendenciabyId);                //passo a pendencia que encontrei com os values ja pra preencher o modal
-
+        } else {
+            loadPendencia();
         }
         setModalEditar(current => !current);
     }
@@ -122,23 +136,42 @@ function Tabela() {
         setModalAndam(current => !current)
         if (modalAndam) {
             setarId(event.currentTarget.dataset.id)
+        } else {
+            loadPendencia();
         }
     }
 
-
     const clickNovaPendencia = () => {
       setModalNova(current => !current);
-      if (modalNova) {
-        forceUpdate(); //atualizando a tabela do jeito errado, usar a response do modal pra montar uma nova pendencia
-      }
+        if (modalNova) {
+            loadPendencia();
+        } 
     }
-  
+
+    const clickDetalhePendencia = (event) => {
+        if (modalDetalhe) {
+            const idedit = event.currentTarget.dataset.id;
+            setarId(idedit);
+            let pendenciabyId = pendencias.find((pendencia) => pendencia.id == idedit);
+            setPendenciaDetalhe(pendenciabyId);
+        }
+        setModalDetalhe(current => !current);
+    }
+
+
+
     function formataData(date) {
         date = date.replace(/T/g, ' ');
         date = date.replace(/-/g , '/');
         date = date.replace(/:[^:]*$/, "");
         return date;
     } 
+
+    function formataDataEdit(date) {
+        date = date.replace(/:[^:]*$/, "");
+        return date;
+    }
+
 
 
     return (
@@ -152,7 +185,7 @@ function Tabela() {
             <div className='text-[#ffffffde] flex w-full p-2' >
                 <table className="font-Inter w-full">
                     <thead className="text-left border-b-2 border-[#292929]">
-                        <tr className='cursor-default select-none' >
+                        <tr className='cursor-default select-none'>
                             <th>Título</th>
                             <th>Tipo</th>
                             <th>Responsável</th>
@@ -166,12 +199,12 @@ function Tabela() {
                     <tbody>
                         {isChecked && pendenciasfinalizadaspag.map((item) => (
                             <tr className='font-system text-sm hover:bg-[#12121266] transition-all cursor-default leading-6' key={item.id}>
-                                <td className='pl-1' >{item.titulo}</td>
-                                <td>{item.tipo}</td>
-                                <td>{item.responsavel}</td>
-                                <td>{formataData(item.dateinit)}</td>
-                                <td>{formataData(item.dateend)}</td>
-                                <td>{formataData(item.dateatt)}</td>
+                                <td data-id={item.id} onClick={clickDetalhePendencia} className='pl-1' >{item.titulo}</td>
+                                <td data-id={item.id} onClick={clickDetalhePendencia}>{item.tipo}</td>
+                                <td data-id={item.id} onClick={clickDetalhePendencia}>{item.responsavel}</td>
+                                <td data-id={item.id} onClick={clickDetalhePendencia}>{formataData(item.dateinit)}</td>
+                                <td data-id={item.id} onClick={clickDetalhePendencia}>{formataData(item.dateend)}</td>
+                                <td data-id={item.id} onClick={clickDetalhePendencia}>{formataData(item.dateatt)}</td>
                                 <td>{item.taskid ? (
                                     <div onClick={() => {navigator.clipboard.writeText(item.taskid)}} className='flex hover:text-[#aaaaaa]'>
                                         <BsClipboard className='mt-1 mr-1'/>
@@ -187,12 +220,12 @@ function Tabela() {
                         ))}
                         {!isChecked && pendenciasabertaspag.map((item) => (
                             <tr className='font-system text-sm hover:bg-[#12121266] transition-all cursor-default leading-6' key={item.id}>
-                                <td className='pl-1' >{item.titulo}</td>
-                                <td>{item.tipo}</td>
-                                <td>{item.responsavel}</td>
-                                <td>{formataData(item.dateinit)}</td>
-                                <td>{formataData(item.dateend)}</td>
-                                <td>{formataData(item.dateatt)}</td>
+                                <td data-id={item.id} onClick={clickDetalhePendencia} className='pl-1' >{item.titulo}</td>
+                                <td data-id={item.id} onClick={clickDetalhePendencia}>{item.tipo}</td>
+                                <td data-id={item.id} onClick={clickDetalhePendencia}>{item.responsavel}</td>
+                                <td data-id={item.id} onClick={clickDetalhePendencia}>{formataData(item.dateinit)}</td>
+                                <td data-id={item.id} onClick={clickDetalhePendencia}>{formataData(item.dateend)}</td>
+                                <td data-id={item.id} onClick={clickDetalhePendencia}>{formataData(item.dateatt)}</td>
                                 <td>{item.taskid ? (
                                     <div onClick={() => {navigator.clipboard.writeText(item.taskid)}} className='flex hover:text-[#aaaaaa]'>
                                         <BsClipboard className='mt-1 mr-1'/>
@@ -210,7 +243,7 @@ function Tabela() {
                                             onMouseOver={item.andamento.length > 0 ? handleMouseOver : null }
                                             onMouseLeave={handleMouseOut}
                                             data-id={item.id} 
-                                            onClick={item.andamento.length > 0 ? clickAndamentoPendencia : null} 
+                                            onClick={clickAndamentoPendencia} 
                                             className={`cursor-default ${item.andamento.length > 0 ? 'hover:text-[#aaaaaa]' : 'text-[#666666]'}`} >
                                             <BiCommentDetail /> 
                                         </a>
@@ -248,12 +281,12 @@ function Tabela() {
                         previousLabel={"<"}
                         previousClassName='hover:bg-[#292929] transition-all rounded w-[15px]'
                         previousLinkClassName='cursor-default'
-                        nextLinkClassName='cursor-default'
+                        nextLinkClassName='cursor-default w-full'
                         nextLabel={">"}
                         nextClassName='hover:bg-[#292929] transition-all rounded w-[15px]'
                         disabledClassName=''
                         pageLinkClassName='cursor-default'
-                        pageClassName='mx-1 hover:bg-[#292929] transition-all rounded '
+                        pageClassName='mx-1 hover:bg-[#292929] transition-all rounded'
                         activeClassName='bg-[#242424]'
                     />
                 </div>
@@ -261,9 +294,10 @@ function Tabela() {
             </footer>
             <div>
             { modalNova ? <ModalNovaPendencia fecharModal={clickNovaPendencia} /> : null}
-            { !modalFechar ? <ModalFecharPendencia closeModal={clickEncerrarPendencia} id={idOut}/> : null }
+            { !modalFechar ? <ModalFecharPendencia closeModal={clickEncerrarPendencia} id={idOut} idtask={pendenciaFechar}/> : null }
             { !modalEditar ? <ModalEditPendencia fecharModal={clickEditarPendencia} penden={pendenciaEdit}/> : null}
             { !modalAndam ? <ModalAndamento closeModal={clickAndamentoPendencia} id={idOut}/> : null }
+            { !modalDetalhe ? <ModalDetalhePendencia fecharModal={clickDetalhePendencia} penden={pendenciaDetalhe} /> : null}
             </div>
       </>
     )

@@ -6,19 +6,22 @@ import Signin from './components/signin';
 import RequireAuth from './components/RequireAuth';
 import { Routes, Route } from 'react-router-dom';
 import Gerencia from './components/gerencia';
+import Layout from './components/layout';
 
 function App() {
 
   return (
-    <>
       <Routes>
-          <Route index element={<Tabela />} />
-          <Route path="register" element={<Register />} />
-          <Route path="login" element={<Signin />} />
-          <Route path="pendencias" element={<Tabela />} />
-          <Route path="gerencia" element={<Gerencia />} />
+          <Route path="/" element={<Layout />}>
+            <Route path="register" element={<Register />} />
+            <Route path="login" element={<Signin />} />
+
+            <Route element={<RequireAuth />}>
+              <Route path="pendencias" element={<Tabela />} />
+              <Route path="gerencia" element={<Gerencia />} />
+            </Route>
+          </Route>
       </Routes>
-    </>
   )
 }
 

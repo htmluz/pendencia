@@ -16,6 +16,10 @@ tr:nth-child(odd) {
   background-color: #242424; 
 }
 
+tr.detalhe {
+  background-color: white;
+}
+
 input::-webkit-outer-spin-button,
 input::-webkit-inner-spin-button {
     -webkit-appearance: none;

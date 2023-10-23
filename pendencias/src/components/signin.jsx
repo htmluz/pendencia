@@ -3,8 +3,6 @@ import axios from "../api/axios";
 import useAuth from "../Hooks/useAuth";
 import { Link, useNavigate } from "react-router-dom";
 
-const URL_LOGIN = "/usuarios/auth";
-
 function Signin() {
     const { setAuth } = useAuth();
 
@@ -21,7 +19,7 @@ function Signin() {
         userRef.current.focus();
     }, [])
 
-    useEffect(() => {
+    useEffect(() => {  //seta msg de erro conforme user e pwd vão atualizando
         setErrMsg('');
     }, [user, pwd])
 
@@ -30,7 +28,7 @@ function Signin() {
         e.preventDefault();
 
         try {
-            const response = await axios.post(URL_LOGIN,
+            const response = await axios.post("/usuarios/auth",
                 { user, pwd },
                 {
                     headers: { 'Content-Type': 'application/json'},
@@ -38,11 +36,10 @@ function Signin() {
                 }
             );
             const accessToken = response?.data?.accessToken;
-            console.log(response.data);
-            setAuth({ user, pwd, accessToken});
+            setAuth({ user, pwd, accessToken}); //enviando pro contexto geral user, senha e token
             setUser('');
             setPwd('');
-            navigate('/pendencias');  //ENTENDER O QUE TA ROLANDO N TA ACESSANDO A TABELA
+            navigate('/pendencias'); 
         } catch (err) {
             if (!err?.response) {
                 setErrMsg("Sem resposta do servidor");

@@ -2,8 +2,11 @@ import { useState } from "react";
 import useAxiosPrivate from "../Hooks/useAxiosPrivate";
 import { AiOutlineClose } from "react-icons/ai";
 import moment from "moment-timezone"
+import useAuth from '../Hooks/useAuth';
+
 
 function ModalAndamento( { closeModal, id }) {
+    const { auth } = useAuth();
     const [formData, setFormData] = useState({
         andamento: {
             user: "",
@@ -21,17 +24,14 @@ function ModalAndamento( { closeModal, id }) {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        const user = "luiz"; //dps alterar para autenticação
-        formData.andamento.user = user;
+        formData.andamento.user = auth.user;
         try {
             const response = await axiosPrivate.put(`/pendencias/andamento/${id}`, formData, {
                 headers: {
                     'Content-Type': 'application/json',
                 },
             })
-            console.log(formData);
             closeModal();
-
         } catch (err) {
             console.log(err)
         }

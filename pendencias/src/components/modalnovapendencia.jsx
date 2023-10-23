@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { AiOutlineClose } from "react-icons/ai";
 import useAxiosPrivate from '../Hooks/useAxiosPrivate';
+import useAuth from '../Hooks/useAuth';
 
 function ModalNovaPendencia( { fecharModal }) {
+    const { auth } = useAuth();
     const [formData, setFormData] = useState({
         titulo: "",
         tipo: "",
@@ -21,8 +23,6 @@ function ModalNovaPendencia( { fecharModal }) {
     });
     const [tipos, setTipos] = useState();
     const axiosPrivate = useAxiosPrivate();
-
-    const usuario = "luiz"
 
     useEffect(() => {
         const controller = new AbortController();
@@ -48,7 +48,7 @@ function ModalNovaPendencia( { fecharModal }) {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        formData.abertura.user = usuario;
+        formData.abertura.user = auth.user;
         try {
             const response = await axiosPrivate.post('/pendencias/new', formData, {
                 headers: {

@@ -21,7 +21,6 @@ function Users() {
             try {
                 const response = await axiosPrivate.get('/usuarios/get', {
                     signal: controller.signal});
-                console.log(response.data);
                 isMounted && setUsers(response.data);
             } catch (err) {
                 console.log("aqui");  //add navigation pro login dps
