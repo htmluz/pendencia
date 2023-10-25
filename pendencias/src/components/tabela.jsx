@@ -14,7 +14,7 @@ import ModalDetalhePendencia from './modaldetalhependencia';
 import TableAndamentos from './tableandamentos';
 import useAxiosPrivate from '../Hooks/useAxiosPrivate';
 import useAuth from '../Hooks/useAuth';
-
+import moment from 'moment-timezone';
 
 
 function Tabela() { 
@@ -80,6 +80,7 @@ function Tabela() {
         } else {
             setTotalPages(Math.ceil(pendenciasAbertas.length / itemsPerPage)) 
         }
+        console.log(pendenciasabertaspag)
     }, [!isChecked])
 
     const startIndex = currentPage * itemsPerPage;
@@ -161,15 +162,15 @@ function Tabela() {
 
 
     function formataData(date) {
-        date = date.replace(/T/g, ' ');
-        date = date.replace(/-/g , '/');
-        date = date.replace(/:[^:]*$/, "");
-        return date;
+        date = moment(date);
+        date.tz('America/Sao_Paulo');
+        return date.format('YYYY/MM/DD HH:mm')
     } 
 
     function formataDataEdit(date) {
-        date = date.replace(/:[^:]*$/, "");
-        return date;
+        date = moment(date);
+        date.tz('America/Sao_Paulo')
+        return date.format('YYYY-MM-DD HH:mm');
     }
 
 
@@ -216,6 +217,17 @@ function Tabela() {
                                     <a className='underline hover:text-[#aaaaaa]' href={item.incidenturl} target='_blank'>incidente</a>
                                     ) : null}
                                 </td>
+                                <td className='pr-0'>
+                                    <div className='flex flex-row pr-0'>
+                                        <a 
+                                            onMouseOver={item.andamento.length > 0 ? handleMouseOver : null }
+                                            onMouseLeave={handleMouseOut}
+                                            data-id={item.id} 
+                                            className={`cursor-default ${item.andamento.length > 0 ? 'hover:text-[#aaaaaa]' : 'text-[#666666]'}`} >
+                                            <BiCommentDetail /> 
+                                        </a>
+                                    </div>
+                                </td>
                             </tr>
                         ))}
                         {!isChecked && pendenciasabertaspag.map((item) => (
@@ -256,7 +268,7 @@ function Tabela() {
                     </tbody>
                 </table>
             </div>
-            {isElementVisible ? <TableAndamentos handleMouseOver={handleMouseOver2} handleMouseOut={handleMouseOut} top={position.top} id={idOut} pendencias={pendenciasabertaspag} /> : null}
+            {isElementVisible ? <TableAndamentos handleMouseOver={handleMouseOver2} handleMouseOut={handleMouseOut} top={position.top} id={idOut} pendencias={isChecked ? pendenciasfinalizadaspag : pendenciasabertaspag} /> : null}
             <footer className='text-[#ffffffde] flex justify-between font-system bg-gradient-to-t from-[#212121] fixed w-full bottom-0 pb-0' >
                 <label className='mb-1 ml-1 relative inline-flex cursor-default select-none items-center justify-center rounded-md bg-[#343434] p-[3px] '>
                     <input 

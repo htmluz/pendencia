@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import { AiOutlineCheck, AiOutlineClose } from "react-icons/ai";
 import axios from "../api/axios";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 const USER_REGEX = /^[a-zA-Z][a-zA-Z0-9-_.]{3,23}$/;
 const PWD_REGEX = /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%]).{8,24}$/;
@@ -25,6 +25,8 @@ function Register() {
 
     const [errMsg, setErrMsg] = useState('');
     const [success, setSuccess] = useState(false);
+
+    const navigate = useNavigate();
 
     useEffect(() => {               //seta o focus quando loadar o componente
         userRef.current.focus();
@@ -73,14 +75,7 @@ function Register() {
         <>
             <section className="bg-white w-2/6 mt-20 ml-auto mr-auto rounded p-4 pb-5 shadow-modal font-Inter font-bold">
                 {success ? (
-                    <section>
-                        <p className="cursor-default text-base font-system font-thin">
-                            <a className="font-Inter font-bold">Usuário criado!<br/></a> 
-                            <span>
-                                <a className="underline" href="#">Entrar</a>
-                            </span>
-                        </p>
-                    </section>
+                    navigate('/login')
                 ) : (
                     <div>
                         <p ref={errRef} className={errMsg ? "bg-[#ff333355] text-[#ff0000] rounded p-1 mb-2 text-center" : "hidden"}>{errMsg}</p>

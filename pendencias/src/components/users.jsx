@@ -1,37 +1,44 @@
 import { useEffect, useState } from "react";
 import useAxiosPrivate from "../Hooks/useAxiosPrivate";
 import ModalNovoUser from "./modalnovouser";
+import { BsTrash } from "react-icons/bs" 
 
 function Users() {
     const [users, setUsers] = useState();
     const axiosPrivate = useAxiosPrivate();
     const [modalUser, setModalUser] = useState(false);
 
+    const getUsers = async () => {
+        try {
+            const response = await axiosPrivate.get('/usuarios/get');
+            setUsers(response.data);
+        } catch (err) {
+            console.log(err)
+        }
+    }
+
     const clickModal = () => {
         setModalUser(current => !current);
-      }
+        if (!modalUser) {
+            getUsers();
+        }
+      } 
 
 
-    useEffect(() => {
-        let isMounted = true;
-        const controller = new AbortController();
-        
-
-        const getUsers = async () => {
-            try {
-                const response = await axiosPrivate.get('/usuarios/get', {
-                    signal: controller.signal});
-                isMounted && setUsers(response.data);
-            } catch (err) {
-                console.log("aqui");  //add navigation pro login dps
-            }
+    const deleteUser = async (event) => {
+        try {
+            let name = event.currentTarget;
+            name = name.previousSibling;
+            name = name.textContent;
+            const response = await axiosPrivate.delete(`/usuarios/delete/${name}`)
+        } catch (err) {
+            console.log(err)
         }
         getUsers();
+    }
 
-        return () => {
-            isMounted = false;
-            controller.abort();
-        }
+    useEffect(() => {
+        getUsers();
     }, [])
 
     return (
@@ -42,7 +49,11 @@ function Users() {
                 {users?.length
                     ? (
                         <ul className="mb-2">
-                            {users.map((user, i) => <li key={i}>{user?.user}</li>)}
+                            {users.map((user, i) => <li className="flex justify-between" key={i}>
+                                                        <span>{user?.user}</span>
+                                                        <BsTrash onClick={deleteUser} className="mt-1 hover:text-[#aaaaaa] transition-all" />
+                                                    </li>
+                            )}
                         </ul>
                     ) : <p>Sem conexão com o banco</p> 
             }

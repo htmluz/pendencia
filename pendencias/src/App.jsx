@@ -14,7 +14,7 @@ function App() {
       <Routes>
           <Route path="/" element={<Layout />}>
             <Route path="register" element={<Register />} />
-            <Route path="login" element={<Signin />} />
+            <Route index path="login" element={<Signin />} />
 
             <Route element={<RequireAuth />}>
               <Route path="pendencias" element={<Tabela />} />

@@ -1,13 +1,14 @@
 import React from 'react';
 import { AiOutlineClose } from "react-icons/ai";
+import moment from 'moment-timezone';
+
 
 function ModalDetalhePendencia( { fecharModal, penden }) {
 
     function formataData(date) {
-        date = date.replace(/T/g, ' ');
-        date = date.replace(/-/g , '/');
-        date = date.replace(/:[^:]*$/, "");
-        return date;
+        date = moment(date);
+        date.tz('America/Sao_Paulo');
+        return date.format('YYYY/MM/DD HH:mm')
     } 
 
     function incidente(url) {
