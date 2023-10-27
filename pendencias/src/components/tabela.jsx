@@ -1,11 +1,12 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { useState, useEffect, useReducer } from 'react'
+import { useState, useEffect } from 'react'
 import ReactPaginate from 'react-paginate';
 import { BiCommentDetail, BiEdit } from "react-icons/bi";
-import { AiOutlineCheckSquare } from "react-icons/ai";
-import { AiOutlinePlus } from "react-icons/ai";
+import { AiOutlineCheckSquare, AiOutlinePlus } from "react-icons/ai";
 import { BsClipboard } from "react-icons/bs"
+import { PiWarningCircle, PiWarningOctagon } from "react-icons/pi"
+import { FaSortDown, FaSortUp } from "react-icons/fa";
 import ModalAndamento from './modalandamento';
 import ModalNovaPendencia from './modalnovapendencia';
 import ModalFecharPendencia from './modalFecharPendencia';
@@ -13,12 +14,10 @@ import ModalEditPendencia from './modaleditpendencia';
 import ModalDetalhePendencia from './modaldetalhependencia';
 import TableAndamentos from './tableandamentos';
 import useAxiosPrivate from '../Hooks/useAxiosPrivate';
-import useAuth from '../Hooks/useAuth';
 import moment from 'moment-timezone';
 
 
 function Tabela() { 
-    const { auth } = useAuth();
     const axiosPrivate = useAxiosPrivate();
     const [idOut, setIdOut] = useState(null);
     const [loading, setLoading] = useState(false);
@@ -34,30 +33,35 @@ function Tabela() {
     const [modalDetalhe, setModalDetalhe] = useState(true);
     const [pendenciaEdit, setPendenciaEdit] = useState(null);
     const [pendenciaFechar, setPendenciaFechar] = useState(null);
-    const [pendenciaDetalhe, setPendenciaDetalhe] = useState(null);
     const [isElementVisible, setElementVisible] = useState(false);
+    const [pendenciaDetalhe, setPendenciaDetalhe] = useState(null);
+    const [pendenciasAbertas, setPendenciasAbertas] = useState([]);
+    const [pendenciasFinalizadas, setPendenciasFinalizadas] = useState([]);
+    const [order, setOrder] = useState("asc")
+    const [col, setCol] = useState("");
     const itemsPerPage = 31;
 
- 
+    let teste = moment()
+
+
     useEffect(() => {
         loadPendencia();
     }, []) 
     
-
-    const pendenciasFinalizadas = pendencias.filter((pendencia) => pendencia.complete == true);
-    const pendenciasAbertas = pendencias.filter((pendencia) => pendencia.complete == false);
-
-
     const loadPendencia = async () => {
         setLoading(true);
         try {
             const response = await axiosPrivate.get('/getpendencias');
             setLoading(false);
             setPendencias(response.data);
+            setPendenciasAbertas(response.data.filter((pendencia) => pendencia.complete == false))
+            setPendenciasFinalizadas(response.data.filter((pendencia) => pendencia.complete == true))
         } catch (err) {
             console.log(err)
         }
     }
+
+
 
     const handleMouseOver = (event) => { //mostra a tabela de andamentos
         const { clientX, clientY } = event;
@@ -80,7 +84,6 @@ function Tabela() {
         } else {
             setTotalPages(Math.ceil(pendenciasAbertas.length / itemsPerPage)) 
         }
-        console.log(pendenciasabertaspag)
     }, [!isChecked])
 
     const startIndex = currentPage * itemsPerPage;
@@ -173,7 +176,51 @@ function Tabela() {
         return date.format('YYYY-MM-DD HH:mm');
     }
 
+    function dataAviso(date) {
+        date = moment(date);
+        date.tz('America/Sao_Paulo');
+        date = date.isBefore(moment().tz('America/Sao_Paulo'))
+        return date
+    }
 
+    const sorting = (col) => {
+        if (!isChecked) {
+            if (order === "asc") {
+                const sorted = [...pendenciasAbertas].sort((a, b) => 
+                a[col] > b[col] ? 1 : -1
+                )
+                setPendenciasAbertas(sorted);
+                setCol(col);
+                setOrder("dsc");
+            }
+            if (order === "dsc") {
+                const sorted = [...pendenciasAbertas].sort((a, b) => 
+                a[col] < b[col] ? 1 : -1
+                )
+                setPendenciasAbertas(sorted);
+                setCol(col);
+                setOrder("asc");
+            }
+        }
+        if (isChecked) {
+            if (order === "asc") {
+                const sorted = [...pendenciasFinalizadas].sort((a, b) => 
+                a[col] > b[col] ? 1 : -1
+                )
+                setPendenciasFinalizadas(sorted);
+                setCol(col);
+                setOrder("dsc");
+            }
+            if (order === "dsc") {
+                const sorted = [...pendenciasFinalizadas].sort((a, b) => 
+                a[col] < b[col] ? 1 : -1
+                )
+                setPendenciasFinalizadas(sorted);
+                setCol(col);
+                setOrder("asc");
+            }
+        }
+    }
 
     return (
         <>
@@ -190,9 +237,23 @@ function Tabela() {
                             <th>Título</th>
                             <th>Tipo</th>
                             <th>Responsável</th>
-                            <th>Início</th>
-                            <th>Previsão</th>
-                            <th>Atualizar em</th>
+                            <th className='flex' onClick={() => sorting('dateinit')}>
+                                Início
+                                {col === "dateinit" && order === "asc" ? <FaSortUp className='mt-1'/> : null}
+                                {col === "dateinit" && order === "dsc" ? <FaSortDown className='mt-1'/> : null}
+                            </th>
+                            <th onClick={() => sorting('dateend')}>
+                                <div className='flex'>
+                                    Previsão
+                                    {col === "dateend" && order === "asc" ? <FaSortUp className='mt-1'/> : null}
+                                    {col === "dateend" && order === "dsc" ? <FaSortDown className='mt-1'/> : null}
+                                </div>
+                            </th>
+                            <th className='flex' onClick={() => sorting('dateatt')}>
+                                Atualizar em
+                                {col === "dateatt" && order === "asc" ? <FaSortUp className='mt-1'/> : null}
+                                {col === "dateatt" && order === "dsc" ? <FaSortDown className='mt-1'/> : null}
+                            </th>
                             <th>Task</th>
                             <th>Incidente</th>
                         </tr>
@@ -236,8 +297,16 @@ function Tabela() {
                                 <td data-id={item.id} onClick={clickDetalhePendencia}>{item.tipo}</td>
                                 <td data-id={item.id} onClick={clickDetalhePendencia}>{item.responsavel}</td>
                                 <td data-id={item.id} onClick={clickDetalhePendencia}>{formataData(item.dateinit)}</td>
-                                <td data-id={item.id} onClick={clickDetalhePendencia}>{formataData(item.dateend)}</td>
-                                <td data-id={item.id} onClick={clickDetalhePendencia}>{formataData(item.dateatt)}</td>
+                                <td data-id={item.id} onClick={clickDetalhePendencia}>
+                                    <div className='flex'>
+                                        {formataData(item.dateend)}
+                                        {dataAviso(item.dateend) ? <PiWarningOctagon className='mt-1 ml-1 text-red-500' /> : null}
+                                    </div>
+                                    </td>
+                                <td data-id={item.id} className='flex' onClick={clickDetalhePendencia}>
+                                    {formataData(item.dateatt)}
+                                    {dataAviso(item.dateatt) ? <PiWarningCircle className='mt-1 ml-1 text-yellow-400' /> : null}
+                                </td>
                                 <td>{item.taskid ? (
                                     <div onClick={() => {navigator.clipboard.writeText(item.taskid)}} className='flex hover:text-[#aaaaaa]'>
                                         <BsClipboard className='mt-1 mr-1'/>

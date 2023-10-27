@@ -3,25 +3,28 @@ import { useState } from "react";
 import useAxiosPrivate from "../Hooks/useAxiosPrivate";
 import useAuth from '../Hooks/useAuth';
 import { axiosBitrix } from "../api/bitrix";
+import moment from 'moment-timezone';
+
 
 function ModalFecharPendencia( { closeModal, id, idtask }) {
     const { auth } = useAuth();
     const [formData, setFormData] = useState({
         fechamento: {
             user: "",
-            dateclosening: ""
+            dateclosening: moment().format("YYYY-MM-DD HH:mm")
         }
     });
     const axiosPrivate = useAxiosPrivate();
 
     const BitrixCall = (taskid) => {
-        console.log(taskid);
-        try {
-            const response = axiosBitrix.get(`/tasks.task.complete.json?taskId=${taskid}`)
-            console.log(response);
-        } catch (err) {
-            console.log(err);
-        }
+            if (taskid) {
+                try {
+                    const response = axiosBitrix.get(`/tasks.task.complete.json?taskId=${taskid}`)
+                    console.log(response);
+                } catch (err) {
+                    console.log(err);
+            }
+            }
     }
 
     const handleInputChange = (e) => {
@@ -59,7 +62,7 @@ function ModalFecharPendencia( { closeModal, id, idtask }) {
                         </div>
                         <form method='PUT' onSubmit={handleSubmit} className="font-system font-semibold">
                             <div className=" pb-3">
-                                <input required id="dateclosening" onChange={handleInputChange} min="2023-01-01T00:00" max="2666-01-01T00:00" name="dateclosening" type='datetime-local' className='font-normal px-2 mt-2 transition-colors focus:outline-none focus:bg-[#dddddd] leading-9 bg-[#efefef] rounded w-full' />
+                                <input required id="dateclosening" value={formData.fechamento.dateclosening} onChange={handleInputChange} min="2023-01-01T00:00" max="2666-01-01T00:00" name="dateclosening" type='datetime-local' className='font-normal px-2 mt-2 transition-colors focus:outline-none focus:bg-[#dddddd] leading-9 bg-[#efefef] rounded w-full' />
                             </div>
                             <div className="mt-3">
                                 <button type="submit" className='cursor-default transition-colors  bg-[#187bcd] hover:bg-[#1167b1] rounded px-3 py-2 w-full text-white'>Encerrar Pendência</button>

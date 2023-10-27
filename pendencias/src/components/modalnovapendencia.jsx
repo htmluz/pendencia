@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { AiOutlineClose } from "react-icons/ai";
 import useAxiosPrivate from '../Hooks/useAxiosPrivate';
 import useAuth from '../Hooks/useAuth';
+import moment from 'moment-timezone';
+
 
 function ModalNovaPendencia( { fecharModal }) {
     const { auth } = useAuth();
@@ -9,9 +11,9 @@ function ModalNovaPendencia( { fecharModal }) {
         titulo: "",
         tipo: "",
         responsavel: "",
-        dateinit: "",
-        dateend: "",
-        dateatt: "",
+        dateinit: moment().format("YYYY-MM-DD HH:mm"),
+        dateend: moment().format("YYYY-MM-DD HH:mm"),
+        dateatt: moment().format("YYYY-MM-DD HH:mm"),
         taskid: "",
         incidenturl: "",
         abertura: {
@@ -27,8 +29,6 @@ function ModalNovaPendencia( { fecharModal }) {
     useEffect(() => {
         const controller = new AbortController();
         let isMounted = true;
-
-
         const getTipos = async () => {
             try {
                 const response = await axiosPrivate.get("/tipos/get", {
