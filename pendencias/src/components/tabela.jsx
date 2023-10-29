@@ -41,16 +41,30 @@ function Tabela() {
     const [order, setOrder] = useState("asc")
     const [col, setCol] = useState("");
 
-    //const [pendenciasabertaspag, setPendenciasabertaspag] = useState([])
+    const [pendenciasabertaspag, setPendenciasabertaspag] = useState([]);
+    const [pendenciasfinalizadaspag, setPendenciasfinalizadaspag] = useState([]);
     const itemsPerPage = 31;
-    const startIndex = currentPage * itemsPerPage;
-    const endIndex = startIndex + itemsPerPage;
+    let startIndex = 0;
+    let endIndex = 31;
 
 
     useEffect(() => {
         loadPendencia();
     }, []) 
     
+    useEffect(() => {
+        startIndex = currentPage * itemsPerPage;
+        endIndex = startIndex + itemsPerPage;
+        setPendenciasabertaspag(pendenciasAbertas.slice(startIndex, endIndex));
+    }, [currentPage, pendenciasAbertas])
+
+    useEffect(() => {
+        startIndex = currentPage * itemsPerPage;
+        endIndex = startIndex + itemsPerPage;
+        setPendenciasfinalizadaspag(pendenciasFinalizadas.slice(startIndex, endIndex));
+    }, [currentPage, pendenciasFinalizadas])
+
+
     const loadPendencia = async () => {
         setLoading(true);
         try {
@@ -60,7 +74,6 @@ function Tabela() {
             const pendab = response.data.filter((pendencia) => pendencia.complete == false)
             setTotalPages(Math.ceil(pendab.length / itemsPerPage))
             setPendenciasAbertas(pendab)
-            //setPendenciasabertaspag(pendab.slice(startIndex, endIndex))
             setPendenciasFinalizadas(response.data.filter((pendencia) => pendencia.complete == true))
         } catch (err) {
             console.log(err)
@@ -85,12 +98,6 @@ function Tabela() {
     }
 
     
-
-
-    let pendenciasabertaspag = pendenciasAbertas.slice(startIndex, endIndex);
-    const pendenciasfinalizadaspag = pendenciasFinalizadas.slice(startIndex, endIndex); 
-
-
     useEffect(() => {           //seta a quantia de paginas
         if (isChecked) {
             setTotalPages(Math.ceil(pendenciasFinalizadas.length / itemsPerPage))
@@ -102,18 +109,28 @@ function Tabela() {
 
     const handleSearch = (event) => {
         const query = event.target.value.toLowerCase();
-        if (query === "") {
-            console.log("vazio");
-            setPendenciasabertaspag(pendenciasAbertas.slice(startIndex, endIndex))
+        if (!isChecked) {
+            if (query === "") {
+                setPendenciasabertaspag(pendenciasAbertas.slice(startIndex, endIndex));
+                setCurrentPage(0);
+            } else {
+                setPendenciasabertaspag([...pendenciasAbertas].filter((item) =>
+                item.titulo.toLowerCase().includes(event.target.value.toLowerCase())
+            ))}
         } else {
-            console.log("procurando");
-            setPendenciasabertaspag([...pendenciasAbertas].filter((item) =>
-            item.titulo.toLowerCase().includes(event.target.value.toLowerCase())
-        ))}
+            if (query === "") {
+                setPendenciasfinalizadaspag(pendenciasFinalizadas.slice(startIndex, endIndex));
+                setCurrentPage(0);
+            } else {
+                setPendenciasfinalizadaspag([...pendenciasFinalizadas].filter((item) =>
+                item.titulo.toLowerCase().includes(event.target.value.toLowerCase())
+            ))}
+        }
     }
 
 
     const handlePageChange = (selectedPage) => { 
+        console.log(pendenciasabertaspag);
         setCurrentPage(selectedPage.selected);
     };
 
@@ -248,7 +265,7 @@ function Tabela() {
         <>
             <nav className=' select-none flex flex-row justify-between max-h-10 px-2 py-2 text-sm text-[#ffffffde] bg-gradient-to-b from-[#212121]'>
                 <h1 className='font-Inter font-bold cursor-default'>Pendências Monitoramento</h1>
-                <input id="search" placeholder='Procurar Pendência' className='cursor-not-allowed pl-1 rounded' disabled type="text" /*{onChange={handleSearch}}*/ />
+                <input id="search" placeholder='Procurar Pendência' className='pl-1 rounded bg-[#343434] hover:bg-[#1b1b1b] w-2/4 transition focus:outline-none focus:bg-[#1b1b1b]' onChange={handleSearch} type="text" /*{onChange={handleSearch}}*/ />
                 <a onClick={clickNovaPendencia} className='flex font-system font-medium cursor-default bg-[#343434] hover:bg-[#1b1b1b] transition py-[1px] px-[10px] rounded-md '>
                     <AiOutlinePlus className='mr-1 mt-1 cursor-pointer'/> Nova Pendência 
                 </a>

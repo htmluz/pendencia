@@ -82,7 +82,7 @@ function ModalNovaPendencia( { fecharModal }) {
                                     <div className='py-2'>
                                         <label className='' htmlFor="titulo">
                                             Título:
-                                            <input required value={formData.titulo} onChange={handleInputChange} id="titulo" name="titulo" maxLength="120" type="text" className='font-normal px-2font-normal px-2  transition-colors focus:outline-none focus:bg-[#dddddd] leading-9 bg-[#efefef] rounded w-full' />
+                                            <input required value={formData.titulo} onChange={handleInputChange} id="titulo" name="titulo" maxLength="120" type="text" className='font-normal px-2  transition-colors focus:outline-none focus:bg-[#dddddd] leading-9 bg-[#efefef] rounded w-full' />
                                         </label>
                                     </div>
                                     <div className='py-2'>
