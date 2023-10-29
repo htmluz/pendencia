@@ -37,11 +37,14 @@ function Tabela() {
     const [pendenciaDetalhe, setPendenciaDetalhe] = useState(null);
     const [pendenciasAbertas, setPendenciasAbertas] = useState([]);
     const [pendenciasFinalizadas, setPendenciasFinalizadas] = useState([]);
+
     const [order, setOrder] = useState("asc")
     const [col, setCol] = useState("");
-    const itemsPerPage = 31;
 
-    let teste = moment()
+    //const [pendenciasabertaspag, setPendenciasabertaspag] = useState([])
+    const itemsPerPage = 31;
+    const startIndex = currentPage * itemsPerPage;
+    const endIndex = startIndex + itemsPerPage;
 
 
     useEffect(() => {
@@ -54,7 +57,10 @@ function Tabela() {
             const response = await axiosPrivate.get('/getpendencias');
             setLoading(false);
             setPendencias(response.data);
-            setPendenciasAbertas(response.data.filter((pendencia) => pendencia.complete == false))
+            const pendab = response.data.filter((pendencia) => pendencia.complete == false)
+            setTotalPages(Math.ceil(pendab.length / itemsPerPage))
+            setPendenciasAbertas(pendab)
+            //setPendenciasabertaspag(pendab.slice(startIndex, endIndex))
             setPendenciasFinalizadas(response.data.filter((pendencia) => pendencia.complete == true))
         } catch (err) {
             console.log(err)
@@ -78,18 +84,34 @@ function Tabela() {
         setElementVisible(false);
     }
 
+    
+
+
+    let pendenciasabertaspag = pendenciasAbertas.slice(startIndex, endIndex);
+    const pendenciasfinalizadaspag = pendenciasFinalizadas.slice(startIndex, endIndex); 
+
+
     useEffect(() => {           //seta a quantia de paginas
         if (isChecked) {
             setTotalPages(Math.ceil(pendenciasFinalizadas.length / itemsPerPage))
         } else {
             setTotalPages(Math.ceil(pendenciasAbertas.length / itemsPerPage)) 
+            setCurrentPage(0);
         }
     }, [!isChecked])
 
-    const startIndex = currentPage * itemsPerPage;
-    const endIndex = startIndex + itemsPerPage;
-    const pendenciasabertaspag = pendenciasAbertas.slice(startIndex, endIndex);
-    const pendenciasfinalizadaspag = pendenciasFinalizadas.slice(startIndex, endIndex); //little math pra saber onde vai começar a mostrar as pendencias
+    const handleSearch = (event) => {
+        const query = event.target.value.toLowerCase();
+        if (query === "") {
+            console.log("vazio");
+            setPendenciasabertaspag(pendenciasAbertas.slice(startIndex, endIndex))
+        } else {
+            console.log("procurando");
+            setPendenciasabertaspag([...pendenciasAbertas].filter((item) =>
+            item.titulo.toLowerCase().includes(event.target.value.toLowerCase())
+        ))}
+    }
+
 
     const handlePageChange = (selectedPage) => { 
         setCurrentPage(selectedPage.selected);
@@ -226,6 +248,7 @@ function Tabela() {
         <>
             <nav className=' select-none flex flex-row justify-between max-h-10 px-2 py-2 text-sm text-[#ffffffde] bg-gradient-to-b from-[#212121]'>
                 <h1 className='font-Inter font-bold cursor-default'>Pendências Monitoramento</h1>
+                <input id="search" placeholder='Procurar Pendência' className='cursor-not-allowed pl-1 rounded' disabled type="text" /*{onChange={handleSearch}}*/ />
                 <a onClick={clickNovaPendencia} className='flex font-system font-medium cursor-default bg-[#343434] hover:bg-[#1b1b1b] transition py-[1px] px-[10px] rounded-md '>
                     <AiOutlinePlus className='mr-1 mt-1 cursor-pointer'/> Nova Pendência 
                 </a>
@@ -358,7 +381,7 @@ function Tabela() {
                         className='flex flex-row bg-[#343434] rounded-md' 
                         pageCount={totalPages} 
                         onPageChange={handlePageChange} 
-                        // forcePage={currentPage} 
+                        forcePage={currentPage} 
                         previousLabel={"<"}
                         previousClassName='hover:bg-[#292929] transition-all rounded w-[15px]'
                         previousLinkClassName='cursor-default'

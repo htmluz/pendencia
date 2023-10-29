@@ -1,12 +1,16 @@
 import { useEffect, useState } from "react";
 import useAxiosPrivate from "../Hooks/useAxiosPrivate";
 import ModalNovoUser from "./modalnovouser";
+import ModalUserEdit from "./modaluseredit";
 import { BsTrash } from "react-icons/bs" 
+import { BiEdit } from "react-icons/bi"
 
 function Users() {
     const [users, setUsers] = useState();
     const axiosPrivate = useAxiosPrivate();
     const [modalUser, setModalUser] = useState(false);
+    const [modalEdit, setModalEdit] = useState(false);
+    const [userToEdit, setUserToEdit] = useState("");
 
     const getUsers = async () => {
         try {
@@ -24,6 +28,17 @@ function Users() {
         }
       } 
 
+    const clickModalEdit = async (event) => {
+        if (!modalEdit) {
+            let name = event.currentTarget;
+            name = name.previousSibling;
+            name = name.textContent;
+            setUserToEdit(name);
+            setModalEdit(true)
+        } else {
+            setModalEdit(false)
+        }
+    }
 
     const deleteUser = async (event) => {
         try {
@@ -51,7 +66,7 @@ function Users() {
                         <ul className="mb-2">
                             {users.map((user, i) => <li className="flex justify-between" key={i}>
                                                         <span>{user?.user}</span>
-                                                        <BsTrash onClick={deleteUser} className="mt-1 hover:text-[#aaaaaa] transition-all" />
+                                                        <BiEdit onClick={clickModalEdit} className="mt-1 hover:text-[#aaaaaa] transition-all" />
                                                     </li>
                             )}
                         </ul>
@@ -61,6 +76,7 @@ function Users() {
                 <button onClick={clickModal} className="px-1 py-1 w-full mt-2 rounded cursor-default transition-colors bg-[#187bcd] hover:bg-[#1167b1] active:bg-[#0d4c82] ">Novo Usuário</button>
             </div>
             { modalUser ? <ModalNovoUser fecharModal={clickModal} /> : null}
+            { modalEdit ? <ModalUserEdit fecharModal={clickModalEdit} userEdit={userToEdit}/> : null}
         </>
     );
 };
