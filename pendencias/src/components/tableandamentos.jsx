@@ -1,12 +1,13 @@
+import moment from 'moment-timezone';
+
 
 function TableAndamentos( { pendencias, id, top, handleMouseOut, handleMouseOver } ) {
     const pendenciaId = pendencias.find((penden) => penden.id == id)
 
     function formataData(date) {
-        date = date.replace(/T/g, ' ');
-        date = date.replace(/-/g , '/');
-        date = date.replace(/:[^:]*$/, "");
-        return date;
+        date = moment(date);
+        date.tz('America/Sao_Paulo');
+        return date.format('YYYY/MM/DD HH:mm')
     } 
 
 

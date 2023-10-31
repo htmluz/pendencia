@@ -3,9 +3,9 @@ import { Link } from 'react-router-dom';
 import { useState, useEffect } from 'react'
 import ReactPaginate from 'react-paginate';
 import { BiCommentDetail, BiEdit } from "react-icons/bi";
-import { AiOutlineCheckSquare, AiOutlinePlus } from "react-icons/ai";
+import { AiOutlineCheckSquare, AiOutlinePlus, AiOutlineReload } from "react-icons/ai";
 import { BsClipboard } from "react-icons/bs"
-import { PiWarningCircle, PiWarningOctagon } from "react-icons/pi"
+import { PiWarningFill, PiWarningOctagonFill } from "react-icons/pi"
 import { FaSortDown, FaSortUp } from "react-icons/fa";
 import ModalAndamento from './modalandamento';
 import ModalNovaPendencia from './modalnovapendencia';
@@ -266,6 +266,9 @@ function Tabela() {
             <nav className=' select-none flex flex-row justify-between max-h-10 px-2 py-2 text-sm text-[#ffffffde] bg-gradient-to-b from-[#212121]'>
                 <h1 className='font-Inter font-bold cursor-default'>Pendências Monitoramento</h1>
                 <input id="search" placeholder='Procurar Pendência' className='pl-1 rounded bg-[#343434] hover:bg-[#1b1b1b] w-2/4 transition focus:outline-none focus:bg-[#1b1b1b]' onChange={handleSearch} type="text" /*{onChange={handleSearch}}*/ />
+                <button onClick={loadPendencia} title='Recarregar pendências (Usar ao invés do f5 enquanto não implemento o reload)'>
+                    <AiOutlineReload />
+                </button>
                 <a onClick={clickNovaPendencia} className='flex font-system font-medium cursor-default bg-[#343434] hover:bg-[#1b1b1b] transition py-[1px] px-[10px] rounded-md '>
                     <AiOutlinePlus className='mr-1 mt-1 cursor-pointer'/> Nova Pendência 
                 </a>
@@ -340,12 +343,12 @@ function Tabela() {
                                 <td data-id={item.id} onClick={clickDetalhePendencia}>
                                     <div className='flex'>
                                         {formataData(item.dateend)}
-                                        {dataAviso(item.dateend) ? <PiWarningOctagon className='mt-1 ml-1 text-red-500' /> : null}
+                                        {dataAviso(item.dateend) ? <PiWarningOctagonFill className='mt-1 ml-1 text-red-500' /> : null}
                                     </div>
                                     </td>
                                 <td data-id={item.id} className='flex' onClick={clickDetalhePendencia}>
                                     {formataData(item.dateatt)}
-                                    {dataAviso(item.dateatt) ? <PiWarningCircle className='mt-1 ml-1 text-yellow-400' /> : null}
+                                    {dataAviso(item.dateatt) ? <PiWarningFill className='mt-1 ml-1 text-yellow-500' /> : null}
                                 </td>
                                 <td>{item.taskid ? (
                                     <div onClick={() => {navigator.clipboard.writeText(item.taskid)}} className='flex hover:text-[#aaaaaa]'>
