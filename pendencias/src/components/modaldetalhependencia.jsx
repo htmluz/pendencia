@@ -62,12 +62,12 @@ function ModalDetalhePendencia( { fecharModal, penden }) {
                                                 <th className='text-sm font-Inter font-bold'>Andamentos</th>
                                             </tr>
                                         </thead>
-                                        <tbody>
+                                        <tbody className=' '>
                                             {penden.andamento.map((andamento) => (
-                                                <tr className="detalhe"> 
-                                                    <th className='text-sm text-left font-Inter font-normal'>{formataData(andamento.dateandamento)}</th>                    
-                                                    <th className='text-sm text-center font-Inter font-normal'>{andamento.user}</th>
-                                                    <th className="text-sm min-w-[60%] text-left font-Inter font-normal">{andamento.andamento}</th>
+                                                <tr className="detalhe align-top"> 
+                                                    <th className='text-sm text-left font-Inter font-normal min-w-[115px]'>{formataData(andamento.dateandamento)}</th>                    
+                                                    <th className='text-sm text-left font-Inter font-normal pl-2'>{andamento.user}</th>
+                                                    <th className="text-sm min-w-[60%] text-left font-Inter font-normal pl-3">{andamento.andamento}</th>
                                                 </tr>
                                             ))}
                                         </tbody>

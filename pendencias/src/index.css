@@ -16,8 +16,12 @@ tr:nth-child(odd) {
   background-color: #242424; 
 }
 
-tr.detalhe {
+tr.detalhe:nth-child(odd) {
   background-color: white;
+}
+
+tr.detalhe:nth-child(even) {
+  background-color: #eeeeee;
 }
 
 input::-webkit-outer-spin-button,

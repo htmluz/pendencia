@@ -24,9 +24,9 @@ function TableAndamentos( { pendencias, id, top, handleMouseOut, handleMouseOver
                 <tbody>
                     {pendenciaId.andamento.map((andamento, i) => (
                         <tr className=" leading-6 font-system" key={i}> 
-                            <th >{formataData(andamento.dateandamento)}</th>                    
-                            <th >{andamento.user}</th>
-                            <th className="min-w-[500px] max-w-[1000px] text-left">{andamento.andamento}</th>
+                            <th className='align-top text-left'>{formataData(andamento.dateandamento)}</th>                    
+                            <th className='align-top pl-2 text-left'>{andamento.user}</th>
+                            <th className="min-w-[500px] max-w-[1000px] text-left pl-2">{andamento.andamento}</th>
                         </tr>
                     ))}
                 </tbody>

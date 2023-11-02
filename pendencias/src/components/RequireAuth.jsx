@@ -4,9 +4,10 @@ import useAuth from "../Hooks/useAuth";
 const RequireAuth = () => {
     const { auth } = useAuth();
     const location = useLocation();
+    const cooki = document.cookie
 
     return (
-        auth?.user
+        cooki
             ? <Outlet />
             : <Navigate to="/login" state={{ from: location }} replace />
     );

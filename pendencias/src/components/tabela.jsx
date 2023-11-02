@@ -1,5 +1,5 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useState, useEffect } from 'react'
 import ReactPaginate from 'react-paginate';
 import { BiCommentDetail, BiEdit } from "react-icons/bi";
@@ -15,7 +15,7 @@ import ModalDetalhePendencia from './modaldetalhependencia';
 import TableAndamentos from './tableandamentos';
 import useAxiosPrivate from '../Hooks/useAxiosPrivate';
 import moment from 'moment-timezone';
-
+import axios from '../api/axios';
 
 function Tabela() { 
     const axiosPrivate = useAxiosPrivate();
@@ -37,7 +37,7 @@ function Tabela() {
     const [pendenciaDetalhe, setPendenciaDetalhe] = useState(null);
     const [pendenciasAbertas, setPendenciasAbertas] = useState([]);
     const [pendenciasFinalizadas, setPendenciasFinalizadas] = useState([]);
-
+    const navigate = useNavigate();
     const [order, setOrder] = useState("asc")
     const [col, setCol] = useState("");
 
@@ -128,6 +128,13 @@ function Tabela() {
         }
     }
 
+    function handleLogout() {
+        const cookieName = "logged";
+        const pastDate = new Date(0).toUTCString();
+        document.cookie = `${cookieName}=; expires=${pastDate}; path=/`;
+        const response = axios.get('/usuarios/logout');
+        navigate('/login');
+    }
 
     const handlePageChange = (selectedPage) => { 
         console.log(pendenciasabertaspag);
@@ -222,6 +229,7 @@ function Tabela() {
         return date
     }
 
+    
     const sorting = (col) => {
         if (!isChecked) {
             if (order === "asc") {
@@ -266,9 +274,6 @@ function Tabela() {
             <nav className=' select-none flex flex-row justify-between max-h-10 px-2 py-2 text-sm text-[#ffffffde] bg-gradient-to-b from-[#212121]'>
                 <h1 className='font-Inter font-bold cursor-default'>Pendências Monitoramento</h1>
                 <input id="search" placeholder='Procurar Pendência' className='pl-1 rounded bg-[#343434] hover:bg-[#1b1b1b] w-2/4 transition focus:outline-none focus:bg-[#1b1b1b]' onChange={handleSearch} type="text" /*{onChange={handleSearch}}*/ />
-                <button onClick={loadPendencia} title='Recarregar pendências (Usar ao invés do f5 enquanto não implemento o reload)'>
-                    <AiOutlineReload />
-                </button>
                 <a onClick={clickNovaPendencia} className='flex font-system font-medium cursor-default bg-[#343434] hover:bg-[#1b1b1b] transition py-[1px] px-[10px] rounded-md '>
                     <AiOutlinePlus className='mr-1 mt-1 cursor-pointer'/> Nova Pendência 
                 </a>
@@ -278,8 +283,20 @@ function Tabela() {
                     <thead className="text-left border-b-2 border-[#292929]">
                         <tr className='cursor-default select-none'>
                             <th>Título</th>
-                            <th>Tipo</th>
-                            <th>Responsável</th>
+                            <th onClick={() => sorting('tipo')}>
+                                <div className='flex'>
+                                    Tipo
+                                    {col === "tipo" && order === "asc" ? <FaSortUp className='mt-1'/> : null}
+                                    {col === "tipo" && order === "dsc" ? <FaSortDown className='mt-1'/> : null}
+                                </div>
+                            </th>
+                            <th onClick={() => sorting('responsavel')}>
+                                <div className='flex'>
+                                    Responsável
+                                    {col === "responsavel" && order === "asc" ? <FaSortUp className='mt-1'/> : null}
+                                    {col === "responsavel" && order === "dsc" ? <FaSortDown className='mt-1'/> : null}
+                                </div>
+                            </th>
                             <th className='flex' onClick={() => sorting('dateinit')}>
                                 Início
                                 {col === "dateinit" && order === "asc" ? <FaSortUp className='mt-1'/> : null}
@@ -318,7 +335,7 @@ function Tabela() {
                                 ) : null}
                                 </td>
                                 <td>{item.incidenturl ? (
-                                    <a className='underline hover:text-[#aaaaaa]' href={item.incidenturl} target='_blank'>incidente</a>
+                                    <a className='underline hover:text-[#aaaaaa]' href={item.incidenturl} target='_blank'>Incidente</a>
                                     ) : null}
                                 </td>
                                 <td className='pr-0'>
@@ -358,7 +375,7 @@ function Tabela() {
                                 ) : null}
                                 </td>
                                 <td>{item.incidenturl ? (
-                                    <a className='underline hover:text-[#aaaaaa]' href={item.incidenturl} target='_blank'>incidente</a>
+                                    <a className='underline hover:text-[#aaaaaa]' href={item.incidenturl} target='_blank'>Incidente</a>
                                     ) : null}
                                 </td>
                                 <td className='pr-0'>
@@ -405,15 +422,18 @@ function Tabela() {
                         previousLabel={"<"}
                         previousClassName='hover:bg-[#292929] transition-all rounded w-[15px]'
                         previousLinkClassName='cursor-default'
-                        nextLinkClassName='cursor-default w-full'
+                        nextLinkClassName={'cursor-default w-full'}
                         nextLabel={">"}
                         nextClassName='hover:bg-[#292929] transition-all rounded w-[15px]'
                         disabledClassName=''
                         pageLinkClassName='cursor-default'
                         pageClassName='mx-1 hover:bg-[#292929] transition-all rounded'
                         activeClassName='bg-[#242424]'
+                        breakLabel="..."
+                        pageRangeDisplayed={5}
                     />
                 </div>
+                <button className='mr-1 mb-1 float-right text-sm font-medium cursor-default select-none px-[10px] p-[3px] bg-[#343434] hover:bg-[#1b1b1b] transition-all rounded-md' onClick={handleLogout}>Logout</button>
                 <Link className='mr-1 mb-1 float-right text-sm font-medium cursor-default select-none px-[10px] p-[3px] bg-[#343434] hover:bg-[#1b1b1b] transition-all rounded-md' to="/gerencia">Gerência</Link>
             </footer>
             <div>
