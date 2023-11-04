@@ -37,6 +37,7 @@ function Tabela() {
     const [pendenciaDetalhe, setPendenciaDetalhe] = useState(null);
     const [pendenciasAbertas, setPendenciasAbertas] = useState([]);
     const [pendenciasFinalizadas, setPendenciasFinalizadas] = useState([]);
+    const [searchValue, setSearchValue] = useState("titulo");
     const navigate = useNavigate();
     const [order, setOrder] = useState("asc")
     const [col, setCol] = useState("");
@@ -115,7 +116,10 @@ function Tabela() {
                 setCurrentPage(0);
             } else {
                 setPendenciasabertaspag([...pendenciasAbertas].filter((item) =>
-                item.titulo.toLowerCase().includes(event.target.value.toLowerCase())
+                (searchValue === 'dateinit'
+                    ? item[searchValue].toLowerCase().includes(event.target.value.replace(/\//g, '-'))
+                    : item[searchValue].toLowerCase().includes(event.target.value.toLowerCase())
+                )
             ))}
         } else {
             if (query === "") {
@@ -123,21 +127,25 @@ function Tabela() {
                 setCurrentPage(0);
             } else {
                 setPendenciasfinalizadaspag([...pendenciasFinalizadas].filter((item) =>
-                item.titulo.toLowerCase().includes(event.target.value.toLowerCase())
+                (searchValue === 'dateinit'
+                    ? item[searchValue].toLowerCase().includes(event.target.value.replace(/\//g, '-'))
+                    : item[searchValue].toLowerCase().includes(event.target.value.toLowerCase())
+                )
             ))}
         }
     }
 
     function handleLogout() {
         const cookieName = "logged";
+        const cookieName2 = "roles";
         const pastDate = new Date(0).toUTCString();
         document.cookie = `${cookieName}=; expires=${pastDate}; path=/`;
+        document.cookie = `${cookieName2}=; expires=${pastDate}; path=/`;
         const response = axios.get('/usuarios/logout');
         navigate('/login');
     }
 
     const handlePageChange = (selectedPage) => { 
-        console.log(pendenciasabertaspag);
         setCurrentPage(selectedPage.selected);
     };
 
@@ -273,7 +281,16 @@ function Tabela() {
         <>
             <nav className=' select-none flex flex-row justify-between max-h-10 px-2 py-2 text-sm text-[#ffffffde] bg-gradient-to-b from-[#212121]'>
                 <h1 className='font-Inter font-bold cursor-default'>Pendências Monitoramento</h1>
-                <input id="search" placeholder='Procurar Pendência' className='pl-1 rounded bg-[#343434] hover:bg-[#1b1b1b] w-2/4 transition focus:outline-none focus:bg-[#1b1b1b]' onChange={handleSearch} type="text" /*{onChange={handleSearch}}*/ />
+                <div className='ml-auto w-3/5'>
+                    <input id="search" placeholder='Procurar Pendência' className='pl-1 rounded-l bg-[#343434] hover:bg-[#1b1b1b] w-2/4 transition focus:outline-none focus:bg-[#1b1b1b]' onChange={handleSearch} type="text" />
+                    <select value={searchValue} onChange={(event) => setSearchValue(event.target.value)} className='text-[#9CA3AF] pl-1 rounded-r bg-[#343434] hover:bg-[#1b1b1b] transition focus:outline-none focus:bg-[#1b1b1b] text-center' id='search'>
+                        <option value="titulo">&#8595; Título</option>
+                        <option value='tipo'>Tipo</option>
+                        <option value='responsavel'>Responsável</option>
+                        <option value='dateinit'>Início</option>
+                        <option value='taskid'>Task</option>
+                    </select>
+                </div>
                 <a onClick={clickNovaPendencia} className='flex font-system font-medium cursor-default bg-[#343434] hover:bg-[#1b1b1b] transition py-[1px] px-[10px] rounded-md '>
                     <AiOutlinePlus className='mr-1 mt-1 cursor-pointer'/> Nova Pendência 
                 </a>

@@ -1,12 +1,17 @@
-import { Link } from "react-router-dom"
+import { Link, useNavigate } from "react-router-dom"
 import axios from "../api/axios";
 
+
 function Footer() {
+    const navigate = useNavigate();
+
 
     function handleLogout() {
         const cookieName = "logged";
+        const cookieName2 = "roles";
         const pastDate = new Date(0).toUTCString();
         document.cookie = `${cookieName}=; expires=${pastDate}; path=/`;
+        document.cookie = `${cookieName2}=; expires=${pastDate}; path=/`;
         const response = axios.get('/usuarios/logout');
         navigate('/login');
     }

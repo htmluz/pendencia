@@ -3,6 +3,10 @@ import axios from "../api/axios";
 import useAuth from "../Hooks/useAuth";
 import { Link, useNavigate } from "react-router-dom";
 
+if (navigator.userAgent.indexOf("Firefox") != -1) {
+    alert("Favor utilizar algum navegador baseado no chromium")
+}
+
 function Signin() {
     const { setAuth } = useAuth();
 

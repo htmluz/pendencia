@@ -58,9 +58,6 @@ function Register() {
                     header: { 'Content-type': 'application/json',},
                     withCredentials: true
                 });
-            console.log(user)
-            console.log(pwd)
-            console.log(response.data);
             setSuccess(true);
         } catch (err) {
             if (!err?.response) {

@@ -12,6 +12,8 @@ function Users() {
     const [modalEdit, setModalEdit] = useState(false);
     const [userToEdit, setUserToEdit] = useState("");
 
+    let permission = document.cookie
+
     const getUsers = async () => {
         try {
             const response = await axiosPrivate.get('/usuarios/get');
@@ -30,8 +32,7 @@ function Users() {
 
     const clickModalEdit = async (event) => {
         if (!modalEdit) {
-            let name = event.currentTarget;
-            name = name.previousSibling;
+            let name = event.currentTarget.parentNode.previousSibling;
             name = name.textContent;
             setUserToEdit(name);
             setModalEdit(true)
@@ -42,8 +43,7 @@ function Users() {
 
     const deleteUser = async (event) => {
         try {
-            let name = event.currentTarget;
-            name = name.previousSibling;
+            let name = event.currentTarget.parentNode.previousSibling;
             name = name.textContent;
             const response = await axiosPrivate.delete(`/usuarios/delete/${name}`)
         } catch (err) {
@@ -66,7 +66,10 @@ function Users() {
                         <ul className="mb-2">
                             {users.map((user, i) => <li className="flex justify-between" key={i}>
                                                         <span>{user?.user}</span>
-                                                        <BiEdit onClick={clickModalEdit} className="mt-1 hover:text-[#aaaaaa] transition-all" />
+                                                        <div className="flex">
+                                                            <BiEdit onClick={clickModalEdit} className="mt-1 hover:text-[#aaaaaa] transition-all" />
+                                                            {permission.includes('777') ? <BsTrash onClick={deleteUser} className="mt-1 ml-1 hover:text-[#aaaaaa] transition-all"/> : null}
+                                                        </div>
                                                     </li>
                             )}
                         </ul>

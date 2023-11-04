@@ -20,7 +20,6 @@ function ModalFecharPendencia( { closeModal, id, idtask }) {
             if (taskid) {
                 try {
                     const response = axiosBitrix.get(`/tasks.task.complete.json?taskId=${taskid}`)
-                    console.log(response);
                 } catch (err) {
                     console.log(err);
             }

@@ -2,12 +2,15 @@ import { useEffect, useState } from "react";
 import useAxiosPrivate from "../Hooks/useAxiosPrivate";
 import ModalNovoTipo from "./modalnovotipo";
 import { BsTrash } from "react-icons/bs" 
-
+import { BiEdit } from "react-icons/bi"
+import TipoUserEdit from "./modaltipoedit";
 
 function Tipos() {
     const [tipos, setTipos] = useState();
     const axiosPrivate = useAxiosPrivate();
     const [modalTipo, setModalTipo] = useState(false);
+    const [tipoToEdit, setTipoToEdit] = useState("");
+    const [modalEditTipo, setModalEditTipo] = useState(false);
 
     const getTipos = async () => {
         try {
@@ -18,17 +21,29 @@ function Tipos() {
         }
     }
 
+    const clickModalEdit = async (event) => {
+        if (!modalEditTipo) {
+            let tipo = event.currentTarget.parentNode.previousSibling;
+            tipo = tipo.textContent;
+            setTipoToEdit(tipo);
+            setModalEditTipo(true)
+        } else {
+            setModalEditTipo(false)
+            getTipos();
+        }
+        
+    }
+
     const clickModal = () => {
         setModalTipo(current => !current);
-        if (!modalTipo) {
+        if (modalTipo) {
             getTipos();
         }
       }
 
     const deleteTipo = async (event) => {
         try {
-            let tipo = event.currentTarget;
-            tipo = tipo.previousSibling;
+            let tipo = event.currentTarget.parentNode.previousSibling;
             tipo = tipo.textContent;
             const response = await axiosPrivate.delete(`/tipos/delete/${tipo}`)
         } catch (err) {
@@ -55,7 +70,10 @@ function Tipos() {
                         <ul className="font-system mb-2 leading-6">
                             {tipos.map((tipo, i) => <li key={i} className="flex justify-between">
                                                         <span>{tipo?.tipo}</span>
-                                                        <BsTrash onClick={deleteTipo} className="mt-1 hover:text-[#aaaaaa] transition-all" />
+                                                        <div className="flex">
+                                                            <BiEdit onClick={clickModalEdit} className="mt-1 hover:text-[#aaaaaa] transition-all" />
+                                                            <BsTrash onClick={deleteTipo} className="mt-1 ml-1 hover:text-[#aaaaaa] transition-all" />
+                                                        </div>
                                                     </li>
                             )}
                         </ul>
@@ -64,6 +82,7 @@ function Tipos() {
             <button onClick={clickModal} className="px-1 py-1 w-full mt-2 rounded cursor-default transition-colors bg-[#187bcd] hover:bg-[#1167b1] active:bg-[#0d4c82] ">Novo Tipo</button>
         </div>
         { modalTipo ? <ModalNovoTipo fecharModal={clickModal} /> : null}
+        { modalEditTipo ? <TipoUserEdit fecharModal={clickModalEdit} tipoEdit={tipoToEdit} /> : null}
         </>
     )
 }
