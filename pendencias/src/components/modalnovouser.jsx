@@ -5,11 +5,12 @@ import useAxiosPrivate from "../Hooks/useAxiosPrivate";
 function ModalNovoUser( { fecharModal }) {
     const [formData, setFormData] = useState({
         user: "",
-        pwd: ""
+        pwd: "",
+        roles: ""
     });
     const axiosPrivate = useAxiosPrivate();
 
-
+    let permission = document.cookie
 
     const handleInputChange = (e) => {
         const { name, value } = e.target;
@@ -56,8 +57,22 @@ function ModalNovoUser( { fecharModal }) {
                                     <input required id="pwd" onChange={handleInputChange} name="pwd" type="password" className='font-normal px-2 mt-2 transition-colors focus:outline-none focus:bg-[#dddddd] leading-9 bg-[#efefef] rounded w-full' />
                                 </label>
                             </div>
+                            {permission.includes('777') 
+                                    ? 
+                                    <div className="pb-3">
+                                        <label htmlFor="roles" className="select-none">
+                                            Permissão
+                                            <select required value={formData.roles} id="roles" name="roles" onChange={handleInputChange} className='font-normal px-2 mt-2 transition-colors focus:outline-none focus:bg-[#dddddd] leading-9 bg-[#efefef] rounded w-full'>
+                                                <option value="">Selecione uma Permissão</option>
+                                                <option value="777">Administrador</option>
+                                                <option value="666">Usuário</option>
+                                            </select>
+                                        </label>
+                                    </div>
+                                    : null
+                                }
                             <div className="mt-3">
-                                <button type="submit" className='cursor-default transition-colors  bg-[#187bcd] hover:bg-[#1167b1] rounded px-3 py-2 w-full text-white'>Enviar</button>
+                                <button type="submit" className='cursor-default transition-colors  bg-[#187bcd] hover:bg-[#1167b1] rounded px-3 py-2 w-full text-white'>Criar Novo Usuário</button>
                             </div>
                         </form>
                     </div>

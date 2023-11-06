@@ -288,7 +288,6 @@ function Tabela() {
                         <option value='tipo'>Tipo</option>
                         <option value='responsavel'>Responsável</option>
                         <option value='dateinit'>Início</option>
-                        <option value='taskid'>Task</option>
                     </select>
                 </div>
                 <a onClick={clickNovaPendencia} className='flex font-system font-medium cursor-default bg-[#343434] hover:bg-[#1b1b1b] transition py-[1px] px-[10px] rounded-md '>

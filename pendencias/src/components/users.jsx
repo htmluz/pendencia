@@ -25,9 +25,8 @@ function Users() {
 
     const clickModal = () => {
         setModalUser(current => !current);
-        if (!modalUser) {
-            getUsers();
-        }
+        getUsers();
+
       } 
 
     const clickModalEdit = async (event) => {
@@ -68,7 +67,7 @@ function Users() {
                                                         <span>{user?.user}</span>
                                                         <div className="flex">
                                                             <BiEdit onClick={clickModalEdit} className="mt-1 hover:text-[#aaaaaa] transition-all" />
-                                                            {permission.includes('777') ? <BsTrash onClick={deleteUser} className="mt-1 ml-1 hover:text-[#aaaaaa] transition-all"/> : null}
+                                                            {permission.includes('777') ? <BsTrash onClick={deleteUser} className="mt-1 ml-1 hover:text-[#d30000] transition-all"/> : null}
                                                         </div>
                                                     </li>
                             )}

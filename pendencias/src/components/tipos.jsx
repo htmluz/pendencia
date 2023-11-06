@@ -72,7 +72,7 @@ function Tipos() {
                                                         <span>{tipo?.tipo}</span>
                                                         <div className="flex">
                                                             <BiEdit onClick={clickModalEdit} className="mt-1 hover:text-[#aaaaaa] transition-all" />
-                                                            <BsTrash onClick={deleteTipo} className="mt-1 ml-1 hover:text-[#aaaaaa] transition-all" />
+                                                            <BsTrash onClick={deleteTipo} className="mt-1 ml-1 hover:text-[#d30000] transition-all" />
                                                         </div>
                                                     </li>
                             )}
