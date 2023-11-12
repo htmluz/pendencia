@@ -86,18 +86,12 @@ function Signin() {
                                 onChange={(e) => setPwd(e.target.value)}
                                 required
                                 value={pwd}
-                                className="font-normal px-2 transition-colors focus:outline-none focus:bg-[#dddddd] leading-9 bg-[#efefef] rounded w-full"
+                                className="font-normal px-2 transition-colors focus:outline-none focus:bg-[#dddddd] leading-9 bg-[#efefef] rounded w-full mb-1"
                             />
                             <button className='cursor-default mt-4 mb-4 transition-colors bg-[#187bcd] hover:bg-[#1167b1] active:bg-[#0d4c82] rounded px-3 py-2 w-full text-white'>
                                 Entrar
                             </button>
                         </form>
-                        <p className="cursor-default text-base font-system font-thin">
-                            Não tem uma conta?<br />
-                            <span>
-                                <Link to="/register" className=" underline">Registre-se</Link>
-                            </span>
-                        </p>
                     </div>
             </section> 
             

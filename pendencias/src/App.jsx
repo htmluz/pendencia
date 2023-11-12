@@ -1,7 +1,6 @@
 import React from 'react';
 import './App.css';
 import Tabela from './components/tabela';
-import Register from './components/register';
 import Signin from './components/signin';
 import RequireAuth from './components/RequireAuth';
 import { Routes, Route } from 'react-router-dom';
@@ -13,7 +12,6 @@ function App() {
   return (
       <Routes>
           <Route path="/" element={<Layout />}>
-            <Route path="register" element={<Register />} />
             <Route path="login" element={<Signin />} />
 
             <Route element={<RequireAuth />}>

@@ -5,6 +5,7 @@ import useAxiosPrivate from '../Hooks/useAxiosPrivate';
 function ModalEditPendencia( { fecharModal, penden }) {
     const [formData, setFormData] = useState({
         titulo: penden.titulo,
+        desc: penden.desc,
         tipo: penden.tipo,
         responsavel: penden.responsavel,
         dateinit: penden.dateinit,

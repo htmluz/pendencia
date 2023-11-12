@@ -12,12 +12,12 @@ function ModalNovoTipo( { fecharModal }) {
 
     const handleInputChange = (e) => {
         const { name, value } = e.target;
-        setFormData({ ...formData, [name]: value });
+        const svalue = value.replace(/\s+$/g, "");
+        setFormData({ ...formData, [name]: svalue });
     };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-
         try {
             const response = await axiosPrivate.post("/tipos/new", formData, {
                 headers: {

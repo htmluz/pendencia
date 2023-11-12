@@ -2,8 +2,8 @@ import { useEffect, useState } from "react";
 import useAxiosPrivate from "../Hooks/useAxiosPrivate";
 import ModalNovoUser from "./modalnovouser";
 import ModalUserEdit from "./modaluseredit";
-import { BsTrash } from "react-icons/bs" 
-import { BiEdit } from "react-icons/bi"
+import { BsTrash } from "react-icons/bs";
+import { BiEdit } from "react-icons/bi";
 
 function Users() {
     const [users, setUsers] = useState();

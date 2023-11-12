@@ -4,7 +4,7 @@ import useAxiosPrivate from "../Hooks/useAxiosPrivate";
 
 function ModalTipoEdit( { fecharModal, tipoEdit }) {
     const [formData, setFormData] = useState({
-        tipo: ""
+        tipo: tipoEdit
     });
     const axiosPrivate = useAxiosPrivate();
     
@@ -12,7 +12,6 @@ function ModalTipoEdit( { fecharModal, tipoEdit }) {
         const { name, value } = e.target;
         setFormData({ ...formData, [name]: value });
     };
-
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -23,6 +22,7 @@ function ModalTipoEdit( { fecharModal, tipoEdit }) {
                 },
             })
             fecharModal();
+
         } catch (err) {
             console.log(err)
         }
@@ -39,11 +39,11 @@ function ModalTipoEdit( { fecharModal, tipoEdit }) {
                                 <AiOutlineClose />
                             </button>
                         </div>
-                        <form onSubmit={handleSubmit} className="font-system font-semibold" method='POST'>
+                        <form onSubmit={handleSubmit} className="font-system font-semibold" method='PUT'>
                             <div className=" pb-3">
                                 <label className="select-none" htmlFor="tipo">
                                     Novo Nome
-                                    <input required id="tipo" onChange={handleInputChange} name="tipo" type="text" value={tipoEdit} className='font-normal px-2 mt-2 transition-colors focus:outline-none focus:bg-[#dddddd] leading-9 bg-[#efefef] rounded w-full' />
+                                    <input required id="tipo" onChange={handleInputChange} name="tipo" type="text" value={formData.tipo} className='font-normal px-2 mt-2 transition-colors focus:outline-none focus:bg-[#dddddd] leading-9 bg-[#efefef] rounded w-full' />
                                 </label>
                             </div>
                             <div className="mt-3">
