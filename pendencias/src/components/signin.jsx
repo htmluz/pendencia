@@ -41,6 +41,7 @@ function Signin() {
             );
             const accessToken = response?.data?.accessToken;
             setAuth({ user, pwd, accessToken}); //enviando pro contexto geral user, senha e token
+            window.localStorage.setItem("USER", user)
             setUser('');
             setPwd('');
             navigate('/pendencias'); 

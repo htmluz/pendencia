@@ -1,13 +1,11 @@
 import { AiOutlineClose } from "react-icons/ai";
 import { useState } from "react";
 import useAxiosPrivate from "../Hooks/useAxiosPrivate";
-import useAuth from '../Hooks/useAuth';
 import { axiosBitrix } from "../api/bitrix";
 import moment from 'moment-timezone';
 
 
 function ModalFecharPendencia( { closeModal, id, idtask }) {
-    const { auth } = useAuth();
     const [formData, setFormData] = useState({
         fechamento: {
             user: "",
@@ -33,7 +31,7 @@ function ModalFecharPendencia( { closeModal, id, idtask }) {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        formData.fechamento.user = auth.user;
+        formData.fechamento.user = window.localStorage.getItem("USER");;
         try {
             const response = await axiosPrivate.put(`/pendencias/complete/${id}`, formData, {
                 headers: {

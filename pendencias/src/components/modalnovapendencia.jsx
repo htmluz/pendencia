@@ -1,12 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { AiOutlineClose } from "react-icons/ai";
 import useAxiosPrivate from '../Hooks/useAxiosPrivate';
-import useAuth from '../Hooks/useAuth';
 import moment from 'moment-timezone';
 
 
 function ModalNovaPendencia( { fecharModal }) {
-    const { auth } = useAuth();
     const [formData, setFormData] = useState({
         titulo: "",
         tipo: "",
@@ -48,7 +46,7 @@ function ModalNovaPendencia( { fecharModal }) {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        formData.abertura.user = auth.user;
+        formData.abertura.user = window.localStorage.getItem("USER");
         try {
             const response = await axiosPrivate.post('/pendencias/new', formData, {
                 headers: {

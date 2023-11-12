@@ -12,6 +12,7 @@ function Footer() {
         const pastDate = new Date(0).toUTCString();
         document.cookie = `${cookieName}=; expires=${pastDate}; path=/`;
         document.cookie = `${cookieName2}=; expires=${pastDate}; path=/`;
+        window.localStorage.removeItem("USER")
         const response = axios.get('/usuarios/logout');
         navigate('/login');
     }
