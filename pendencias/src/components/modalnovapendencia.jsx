@@ -4,7 +4,7 @@ import useAxiosPrivate from '../Hooks/useAxiosPrivate';
 import moment from 'moment-timezone';
 
 
-function ModalNovaPendencia( { fecharModal }) {
+function ModalNovaPendencia( { fecharModal, Unidade }) {
     const [formData, setFormData] = useState({
         titulo: "",
         tipo: "",
@@ -19,7 +19,8 @@ function ModalNovaPendencia( { fecharModal }) {
             },
         fechamento: {
                 user: ""
-            }
+            },
+        unidade: Unidade
     });
     const [tipos, setTipos] = useState();
     const axiosPrivate = useAxiosPrivate();

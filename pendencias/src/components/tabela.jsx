@@ -27,10 +27,12 @@ function Tabela() {
     const [pendencias, setPendencias] = useState([]);
     const [modalAndam, setModalAndam] = useState(true);
     const [totalPages, setTotalPages] = useState(0);
+    const [unidade, setUnidade] = useState("TIO");
     const [currentPage, setCurrentPage] = useState(0);
     const [modalFechar, setModalFechar] = useState(true);
     const [modalEditar, setModalEditar] = useState(true);
     const [modalDetalhe, setModalDetalhe] = useState(true);
+    const [isCheckedUni, setIsCheckedUni] = useState(false);
     const [pendenciaEdit, setPendenciaEdit] = useState(null);
     const [pendenciaFechar, setPendenciaFechar] = useState(null);
     const [isElementVisible, setElementVisible] = useState(false);
@@ -51,6 +53,7 @@ function Tabela() {
 
     useEffect(() => {
         loadPendencia();
+        loadPendenciaComplete();
     }, []) 
     
     useEffect(() => {
@@ -69,18 +72,28 @@ function Tabela() {
     const loadPendencia = async () => {
         setLoading(true);
         try {
-            const response = await axiosPrivate.get('/getpendencias');
+            const response = await axiosPrivate.get('/pendencias/get/openTIO');
             setLoading(false);
             setPendencias(response.data);
             const pendab = response.data.filter((pendencia) => pendencia.complete == false)
             setTotalPages(Math.ceil(pendab.length / itemsPerPage))
             setPendenciasAbertas(pendab)
-            setPendenciasFinalizadas(response.data.filter((pendencia) => pendencia.complete == true))
+            // setPendenciasFinalizadas(response.data.filter((pendencia) => pendencia.complete == true))
         } catch (err) {
             console.log(err)
         }
     }
 
+    const loadPendenciaComplete = async () => {
+        setLoading(true);
+        try {
+            const response = await axiosPrivate.get('/pendencias/get/completeTIO');
+            setLoading(false);
+            setPendenciasFinalizadas(response.data);
+        } catch (err) {
+            console.log(err);
+        }
+    }
 
 
     const handleMouseOver = (event) => { //mostra a tabela de andamentos
@@ -100,13 +113,18 @@ function Tabela() {
 
     
     useEffect(() => {           //seta a quantia de paginas
-        if (isChecked) {
-            setTotalPages(Math.ceil(pendenciasFinalizadas.length / itemsPerPage))
-        } else {
-            setTotalPages(Math.ceil(pendenciasAbertas.length / itemsPerPage)) 
+        if (isChecked && !isCheckedUni) {
+            setTotalPages(Math.ceil(pendenciasFinalizadas.filter(item => item.unidade === unidade).length / itemsPerPage));
+        } else if (isChecked && isCheckedUni) {
+            setTotalPages(Math.ceil(pendenciasFinalizadas.filter(item => item.unidade === unidade).length / itemsPerPage));
+        } else if (!isChecked && !isCheckedUni) {
+            setTotalPages(Math.ceil(pendenciasAbertas.filter(item => item.unidade === unidade).length / itemsPerPage));
             setCurrentPage(0);
+        } else if (!isChecked && isCheckedUni) {
+            setTotalPages(Math.ceil(pendenciasAbertas.filter(item => item.unidade === unidade).length / itemsPerPage));
+            setCurrentPage(0); 
         }
-    }, [!isChecked])
+    }, [!isChecked, isCheckedUni])
 
     const handleSearch = (event) => {
         const query = event.target.value.toLowerCase();
@@ -141,7 +159,7 @@ function Tabela() {
         const pastDate = new Date(0).toUTCString();
         document.cookie = `${cookieName}=; expires=${pastDate}; path=/`;
         document.cookie = `${cookieName2}=; expires=${pastDate}; path=/`;
-        window.localStorage.removeItem("USER")
+        window.localStorage.removeItem("USER");
         const response = axios.get('/usuarios/logout');
         navigate('/login');
     }
@@ -158,8 +176,15 @@ function Tabela() {
         setIsChecked(!isChecked);
     }
 
+    const handleCheckboxChangeUni = () => { //troca o valor entre unidades
+        if (!isCheckedUni) {
+            setUnidade("SYGO")
+        } else (setUnidade("TIO"))
+        setIsCheckedUni(!isCheckedUni);
+    }
+
     function setarId(id) {  //função usada pra enviar id para os componentes que precisa, modal editar, modal fechar e tabela de andamentos
-        setIdOut(id)
+        setIdOut(id);
         return idOut
     }
 
@@ -194,7 +219,7 @@ function Tabela() {
     function clickAndamentoPendencia(event) {
         setModalAndam(current => !current)
         if (modalAndam) {
-            setarId(event.currentTarget.dataset.id)
+            setarId(event.currentTarget.dataset.id);
         } else {
             loadPendencia();
         }
@@ -208,10 +233,15 @@ function Tabela() {
     }
 
     const clickDetalhePendencia = (event) => {
-        if (modalDetalhe) {
+        if (modalDetalhe && !isChecked) {
             const idedit = event.currentTarget.dataset.id;
             setarId(idedit);
             let pendenciabyId = pendencias.find((pendencia) => pendencia.id == idedit);
+            setPendenciaDetalhe(pendenciabyId);
+        } else if (modalDetalhe && isChecked) {
+            const idedit = event.currentTarget.dataset.id;
+            setarId(idedit);
+            let pendenciabyId = pendenciasFinalizadas.find((pendencia) => pendencia.id == idedit);
             setPendenciaDetalhe(pendenciabyId);
         }
         setModalDetalhe(current => !current);
@@ -281,7 +311,20 @@ function Tabela() {
     return (
         <>
             <nav className=' select-none flex flex-row justify-between max-h-10 px-2 py-2 text-sm text-[#ffffffde] bg-gradient-to-b from-[#212121]'>
-                <h1 className='font-Inter font-bold cursor-default'>Pendências Monitoramento</h1>
+                <label className='mb-1 py-3 relative inline-flex cursor-default select-none items-center justify-center rounded-md bg-[#343434] p-[3px] '>
+                        <input 
+                            type="checkbox" 
+                            className='sr-only'
+                            checked={isCheckedUni}
+                            onChange={handleCheckboxChangeUni}
+                        />
+                        <span className={`flex items-center space-x-[6px] rounded px-[14px] text-sm font-medium ${!isCheckedUni ? 'bg-[#242424]' : 'hover:bg-[#292929]'} transition-all`}>
+                            TIO
+                        </span>
+                        <span className={` flex items-center space-x-[6px] rounded px-[14px] text-sm font-medium ${isCheckedUni ? 'bg-[#242424]' : ' hover:bg-[#292929]'} transition-all`}>
+                            SYGO
+                        </span>
+                </label>
                 <div className='ml-auto w-3/5'>
                     <input id="search" placeholder='Procurar Pendência' className='pl-1 rounded-l bg-[#343434] hover:bg-[#1b1b1b] w-2/4 transition focus:outline-none focus:bg-[#1b1b1b]' onChange={handleSearch} type="text" />
                     <select value={searchValue} onChange={(event) => setSearchValue(event.target.value)} className='text-[#9CA3AF] pl-1 rounded-r bg-[#343434] hover:bg-[#1b1b1b] transition focus:outline-none focus:bg-[#1b1b1b] text-center' id='search'>
@@ -296,123 +339,192 @@ function Tabela() {
                 </a>
             </nav>
             <div className='text-[#ffffffde] flex w-full p-2' >
-                <table className="font-Inter w-full">
-                    <thead className="text-left border-b-2 border-[#292929]">
-                        <tr className='cursor-default select-none'>
-                            <th>Título</th>
-                            <th onClick={() => sorting('tipo')}>
-                                <div className='flex'>
-                                    Tipo
-                                    {col === "tipo" && order === "asc" ? <FaSortUp className='mt-1'/> : null}
-                                    {col === "tipo" && order === "dsc" ? <FaSortDown className='mt-1'/> : null}
-                                </div>
-                            </th>
-                            <th onClick={() => sorting('responsavel')}>
-                                <div className='flex'>
-                                    Responsável
-                                    {col === "responsavel" && order === "asc" ? <FaSortUp className='mt-1'/> : null}
-                                    {col === "responsavel" && order === "dsc" ? <FaSortDown className='mt-1'/> : null}
-                                </div>
-                            </th>
-                            <th className='flex' onClick={() => sorting('dateinit')}>
-                                Início
-                                {col === "dateinit" && order === "asc" ? <FaSortUp className='mt-1'/> : null}
-                                {col === "dateinit" && order === "dsc" ? <FaSortDown className='mt-1'/> : null}
-                            </th>
-                            <th onClick={() => sorting('dateend')}>
-                                <div className='flex'>
-                                    Previsão
-                                    {col === "dateend" && order === "asc" ? <FaSortUp className='mt-1'/> : null}
-                                    {col === "dateend" && order === "dsc" ? <FaSortDown className='mt-1'/> : null}
-                                </div>
-                            </th>
-                            <th className='flex' onClick={() => sorting('dateatt')}>
-                                Atualizar em
-                                {col === "dateatt" && order === "asc" ? <FaSortUp className='mt-1'/> : null}
-                                {col === "dateatt" && order === "dsc" ? <FaSortDown className='mt-1'/> : null}
-                            </th>
-                            <th>Task</th>
-                            <th>Incidente</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {isChecked && pendenciasfinalizadaspag.map((item) => (
-                            <tr className='font-system text-sm hover:bg-[#12121266] transition-all cursor-default leading-6' key={item.id}>
-                                <td data-id={item.id} onClick={clickDetalhePendencia} className='pl-1' >{item.titulo}</td>
-                                <td data-id={item.id} onClick={clickDetalhePendencia}>{item.tipo}</td>
-                                <td data-id={item.id} onClick={clickDetalhePendencia}>{item.responsavel}</td>
-                                <td data-id={item.id} onClick={clickDetalhePendencia}>{formataData(item.dateinit)}</td>
-                                <td data-id={item.id} onClick={clickDetalhePendencia}>{formataData(item.dateend)}</td>
-                                <td data-id={item.id} onClick={clickDetalhePendencia}>{formataData(item.dateatt)}</td>
-                                <td>{item.taskid ? (
-                                    <div onClick={() => {navigator.clipboard.writeText(item.taskid)}} className='flex hover:text-[#aaaaaa]'>
-                                        <BsClipboard className='mt-1 mr-1'/>
-                                        {item.taskid}
-                                    </div>
-                                ) : null}
-                                </td>
-                                <td>{item.incidenturl ? (
-                                    <a className='underline hover:text-[#aaaaaa]' href={item.incidenturl} target='_blank'>Incidente</a>
-                                    ) : null}
-                                </td>
-                                <td className='pr-0'>
-                                    <div className='flex flex-row pr-0'>
-                                        <a 
-                                            onMouseOver={item.andamento.length > 0 ? handleMouseOver : null }
-                                            onMouseLeave={handleMouseOut}
-                                            data-id={item.id} 
-                                            className={`cursor-default ${item.andamento.length > 0 ? 'hover:text-[#aaaaaa]' : 'text-[#666666]'}`} >
-                                            <BiCommentDetail /> 
-                                        </a>
-                                    </div>
-                                </td>
-                            </tr>
-                        ))}
-                        {!isChecked && pendenciasabertaspag.map((item) => (
-                            <tr className='font-system text-sm hover:bg-[#12121266] transition-all cursor-default leading-6' key={item.id}>
-                                <td data-id={item.id} onClick={clickDetalhePendencia} className='pl-1' >{item.titulo}</td>
-                                <td data-id={item.id} onClick={clickDetalhePendencia}>{item.tipo}</td>
-                                <td data-id={item.id} onClick={clickDetalhePendencia}>{item.responsavel}</td>
-                                <td data-id={item.id} onClick={clickDetalhePendencia}>{formataData(item.dateinit)}</td>
-                                <td data-id={item.id} onClick={clickDetalhePendencia}>
+                {!isChecked ? (
+                    <table className="font-Inter w-full">
+                        <thead className="text-left border-b-2 border-[#292929]">
+                            <tr className='cursor-default select-none'>
+                                <th>Título</th>
+                                <th onClick={() => sorting('tipo')}>
                                     <div className='flex'>
-                                        {formataData(item.dateend)}
-                                        {dataAviso(item.dateend) ? <PiWarningOctagonFill className='mt-1 ml-1 text-red-500' /> : null}
+                                        Tipo
+                                        {col === "tipo" && order === "asc" ? <FaSortUp className='mt-1'/> : null}
+                                        {col === "tipo" && order === "dsc" ? <FaSortDown className='mt-1'/> : null}
                                     </div>
-                                    </td>
-                                <td data-id={item.id} className='flex' onClick={clickDetalhePendencia}>
-                                    {formataData(item.dateatt)}
-                                    {dataAviso(item.dateatt) ? <PiWarningFill className='mt-1 ml-1 text-yellow-500' /> : null}
-                                </td>
-                                <td>{item.taskid ? (
-                                    <div onClick={() => {navigator.clipboard.writeText(item.taskid)}} className='flex hover:text-[#aaaaaa]'>
-                                        <BsClipboard className='mt-1 mr-1'/>
-                                        {item.taskid}
+                                </th>
+                                <th onClick={() => sorting('responsavel')}>
+                                    <div className='flex'>
+                                        Responsável
+                                        {col === "responsavel" && order === "asc" ? <FaSortUp className='mt-1'/> : null}
+                                        {col === "responsavel" && order === "dsc" ? <FaSortDown className='mt-1'/> : null}
                                     </div>
-                                ) : null}
-                                </td>
-                                <td>{item.incidenturl ? (
-                                    <a className='underline hover:text-[#aaaaaa]' href={item.incidenturl} target='_blank'>Incidente</a>
-                                    ) : null}
-                                </td>
-                                <td className='pr-0'>
-                                    <div className='flex flex-row pr-0'>
-                                        <a 
-                                            onMouseOver={item.andamento.length > 0 ? handleMouseOver : null }
-                                            onMouseLeave={handleMouseOut}
-                                            data-id={item.id} 
-                                            onClick={clickAndamentoPendencia} 
-                                            className={`cursor-default ${item.andamento.length > 0 ? 'hover:text-[#aaaaaa]' : 'text-[#666666]'}`} >
-                                            <BiCommentDetail /> 
-                                        </a>
-                                        <a data-id={item.id} onClick={clickEditarPendencia} className='cursor-default hover:text-[#aaaaaa] transition-all'><BiEdit /> </a>
-                                        <a data-id={item.id} onClick={clickEncerrarPendencia} className='cursor-default hover:text-[#aaaaaa] transition-all'><AiOutlineCheckSquare /></a>
+                                </th>
+                                <th className='flex' onClick={() => sorting('dateinit')}>
+                                    Início
+                                    {col === "dateinit" && order === "asc" ? <FaSortUp className='mt-1'/> : null}
+                                    {col === "dateinit" && order === "dsc" ? <FaSortDown className='mt-1'/> : null}
+                                </th>
+                                <th onClick={() => sorting('dateend')}>
+                                    <div className='flex'>
+                                        Previsão
+                                        {col === "dateend" && order === "asc" ? <FaSortUp className='mt-1'/> : null}
+                                        {col === "dateend" && order === "dsc" ? <FaSortDown className='mt-1'/> : null}
                                     </div>
-                                </td>
+                                </th>
+                                <th className='flex' onClick={() => sorting('dateatt')}>
+                                    Atualizar em
+                                    {col === "dateatt" && order === "asc" ? <FaSortUp className='mt-1'/> : null}
+                                    {col === "dateatt" && order === "dsc" ? <FaSortDown className='mt-1'/> : null}
+                                </th>
+                                <th>Task</th>
+                                <th>Incidente</th>
                             </tr>
-                        ))}
-                    </tbody>
-                </table>
+                        </thead>
+                        <tbody>
+                            {pendenciasabertaspag.filter(item => item.unidade === unidade).map((item) => (
+                                <tr className='font-system text-sm hover:bg-[#12121266] transition-all cursor-default leading-6' key={item.id}>
+                                    <td data-id={item.id} onClick={clickDetalhePendencia} className='pl-1' >{item.titulo}</td>
+                                    <td data-id={item.id} onClick={clickDetalhePendencia}>{item.tipo}</td>
+                                    <td data-id={item.id} onClick={clickDetalhePendencia}>{item.responsavel}</td>
+                                    <td data-id={item.id} onClick={clickDetalhePendencia}>{formataData(item.dateinit)}</td>
+                                    <td data-id={item.id} onClick={clickDetalhePendencia}>
+                                        <div className='flex'>
+                                            {formataData(item.dateend)}
+                                            {dataAviso(item.dateend) ? <PiWarningOctagonFill className='mt-1 ml-1 text-red-500' /> : null}
+                                        </div>
+                                        </td>
+                                    <td data-id={item.id} className='flex' onClick={clickDetalhePendencia}>
+                                        {formataData(item.dateatt)}
+                                        {dataAviso(item.dateatt) ? <PiWarningFill className='mt-1 ml-1 text-yellow-500' /> : null}
+                                    </td>
+                                    <td>{item.taskid ? (
+                                        <div onClick={() => {navigator.clipboard.writeText(item.taskid)}} className='flex hover:text-[#aaaaaa]'>
+                                            <BsClipboard className='mt-1 mr-1'/>
+                                            {item.taskid}
+                                        </div>
+                                    ) : null}
+                                    </td>
+                                    <td>{item.incidenturl ? (
+                                        <a className='underline hover:text-[#aaaaaa]' href={item.incidenturl} target='_blank'>Incidente</a>
+                                        ) : null}
+                                    </td>
+                                    <td className='pr-0'>
+                                        <div className='flex flex-row pr-0'>
+                                            <a 
+                                                onMouseOver={item.andamento.length > 0 ? handleMouseOver : null }
+                                                onMouseLeave={handleMouseOut}
+                                                data-id={item.id} 
+                                                onClick={clickAndamentoPendencia} 
+                                                className={`cursor-default ${item.andamento.length > 0 ? 'hover:text-[#aaaaaa]' : 'text-[#666666]'}`} >
+                                                <BiCommentDetail /> 
+                                            </a>
+                                            <a data-id={item.id} onClick={clickEditarPendencia} className='cursor-default hover:text-[#aaaaaa] transition-all'><BiEdit /> </a>
+                                            <a data-id={item.id} onClick={clickEncerrarPendencia} className='cursor-default hover:text-[#aaaaaa] transition-all'><AiOutlineCheckSquare /></a>
+                                        </div>
+                                    </td>
+                                </tr>
+                            ))}
+                        </tbody>
+                    </table>
+                ) : 
+                    <table className="font-Inter w-full">
+                        <thead className="text-left border-b-2 border-[#292929]">
+                            <tr className='cursor-default select-none'>
+                                <th>Título</th>
+                                <th onClick={() => sorting('tipo')}>
+                                    <div className='flex'>
+                                        Tipo
+                                        {col === "tipo" && order === "asc" ? <FaSortUp className='mt-1'/> : null}
+                                        {col === "tipo" && order === "dsc" ? <FaSortDown className='mt-1'/> : null}
+                                    </div>
+                                </th>
+                                <th onClick={() => sorting('responsavel')}>
+                                    <div className='flex'>
+                                        Responsável
+                                        {col === "responsavel" && order === "asc" ? <FaSortUp className='mt-1'/> : null}
+                                        {col === "responsavel" && order === "dsc" ? <FaSortDown className='mt-1'/> : null}
+                                    </div>
+                                </th>
+                                <th className='flex' onClick={() => sorting('dateinit')}>
+                                    Início
+                                    {col === "dateinit" && order === "asc" ? <FaSortUp className='mt-1'/> : null}
+                                    {col === "dateinit" && order === "dsc" ? <FaSortDown className='mt-1'/> : null}
+                                </th>
+                                <th onClick={() => sorting('dateend')}>
+                                    <div className='flex'>
+                                        Fim
+                                        {col === "dateend" && order === "asc" ? <FaSortUp className='mt-1'/> : null}
+                                        {col === "dateend" && order === "dsc" ? <FaSortDown className='mt-1'/> : null}
+                                    </div>
+                                </th>
+                                <th>Task</th>
+                                <th>Incidente</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {isCheckedUni ? pendenciasFinalizadas.filter(item => item.unidade === "SYGO").map((item) => (
+                                <tr className='font-system text-sm hover:bg-[#12121266] transition-all cursor-default leading-6' key={item.id}>
+                                    <td data-id={item.id} onClick={clickDetalhePendencia} className='pl-1' >{item.titulo}</td>
+                                    <td data-id={item.id} onClick={clickDetalhePendencia}>{item.tipo}</td>
+                                    <td data-id={item.id} onClick={clickDetalhePendencia}>{item.responsavel}</td>
+                                    <td data-id={item.id} onClick={clickDetalhePendencia}>{formataData(item.dateinit)}</td>
+                                    <td data-id={item.id} onClick={clickDetalhePendencia}>{formataData(item.dateend)}</td>
+                                    <td>{item.taskid ? (
+                                        <div onClick={() => {navigator.clipboard.writeText(item.taskid)}} className='flex hover:text-[#aaaaaa]'>
+                                            <BsClipboard className='mt-1 mr-1'/>
+                                            {item.taskid}
+                                        </div>
+                                    ) : null}
+                                    </td>
+                                    <td>{item.incidenturl ? (
+                                        <a className='underline hover:text-[#aaaaaa]' href={item.incidenturl} target='_blank'>Incidente</a>
+                                        ) : null}
+                                    </td>
+                                    <td className='pr-0'>
+                                        <div className='flex flex-row pr-0'>
+                                            <a 
+                                                onMouseOver={item.andamento.length > 0 ? handleMouseOver : null }
+                                                onMouseLeave={handleMouseOut}
+                                                data-id={item.id} 
+                                                className={`cursor-default ${item.andamento.length > 0 ? 'hover:text-[#aaaaaa]' : 'text-[#666666]'}`} >
+                                                <BiCommentDetail /> 
+                                            </a>
+                                        </div>
+                                    </td>
+                                </tr>
+                            )) : pendenciasfinalizadaspag.map((item) => (
+                                <tr className='font-system text-sm hover:bg-[#12121266] transition-all cursor-default leading-6' key={item.id}>
+                                    <td data-id={item.id} onClick={clickDetalhePendencia} className='pl-1' >{item.titulo}</td>
+                                    <td data-id={item.id} onClick={clickDetalhePendencia}>{item.tipo}</td>
+                                    <td data-id={item.id} onClick={clickDetalhePendencia}>{item.responsavel}</td>
+                                    <td data-id={item.id} onClick={clickDetalhePendencia}>{formataData(item.dateinit)}</td>
+                                    <td data-id={item.id} onClick={clickDetalhePendencia}>{formataData(item.dateend)}</td>
+                                    <td>{item.taskid ? (
+                                        <div onClick={() => {navigator.clipboard.writeText(item.taskid)}} className='flex hover:text-[#aaaaaa]'>
+                                            <BsClipboard className='mt-1 mr-1'/>
+                                            {item.taskid}
+                                        </div>
+                                    ) : null}
+                                    </td>
+                                    <td>{item.incidenturl ? (
+                                        <a className='underline hover:text-[#aaaaaa]' href={item.incidenturl} target='_blank'>Incidente</a>
+                                        ) : null}
+                                    </td>
+                                    <td className='pr-0'>
+                                        <div className='flex flex-row pr-0'>
+                                            <a 
+                                                onMouseOver={item.andamento.length > 0 ? handleMouseOver : null }
+                                                onMouseLeave={handleMouseOut}
+                                                data-id={item.id} 
+                                                className={`cursor-default ${item.andamento.length > 0 ? 'hover:text-[#aaaaaa]' : 'text-[#666666]'}`} >
+                                                <BiCommentDetail /> 
+                                            </a>
+                                        </div>
+                                    </td>
+                                </tr>
+                                ))}
+                        </tbody>
+                    </table>
+            }
             </div>
             {isElementVisible ? <TableAndamentos handleMouseOver={handleMouseOver2} handleMouseOut={handleMouseOut} top={position.top} id={idOut} pendencias={isChecked ? pendenciasfinalizadaspag : pendenciasabertaspag} /> : null}
             <footer className='text-[#ffffffde] flex justify-between font-system bg-gradient-to-t from-[#212121] fixed w-full bottom-0 pb-0' >
@@ -454,7 +566,7 @@ function Tabela() {
                 <Link className='mr-1 mb-1 float-right text-sm font-medium cursor-default select-none px-[10px] p-[3px] bg-[#343434] hover:bg-[#1b1b1b] transition-all rounded-md' to="/gerencia">Gerência</Link>
             </footer>
             <div>
-            { modalNova ? <ModalNovaPendencia fecharModal={clickNovaPendencia} /> : null}
+            { modalNova ? <ModalNovaPendencia fecharModal={clickNovaPendencia} Unidade={isCheckedUni ? "SYGO" : "TIO"}/> : null}
             { !modalFechar ? <ModalFecharPendencia closeModal={clickEncerrarPendencia} id={idOut} idtask={pendenciaFechar}/> : null }
             { !modalEditar ? <ModalEditPendencia fecharModal={clickEditarPendencia} penden={pendenciaEdit}/> : null}
             { !modalAndam ? <ModalAndamento closeModal={clickAndamentoPendencia} id={idOut}/> : null }

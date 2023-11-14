@@ -8,8 +8,6 @@ function ModalNovoTipo( { fecharModal }) {
     });
     const axiosPrivate = useAxiosPrivate();
 
-
-
     const handleInputChange = (e) => {
         const { name, value } = e.target;
         const svalue = value.replace(/\s+$/g, "");
