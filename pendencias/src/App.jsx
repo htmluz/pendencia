@@ -6,6 +6,8 @@ import RequireAuth from './components/RequireAuth';
 import { Routes, Route } from 'react-router-dom';
 import Gerencia from './components/gerencia';
 import Layout from './components/layout';
+import Dashboard from './components/dashboard';
+import DashboardManu from './components/dashboardmanu';
 
 function App() {
 
@@ -13,6 +15,8 @@ function App() {
       <Routes>
           <Route path="/" element={<Layout />}>
             <Route path="login" element={<Signin />} />
+            <Route path="dashboard" element={<Dashboard />} />
+            <Route path="dashboardmanu" element={<DashboardManu />} />
 
             <Route element={<RequireAuth />}>
               <Route path="pendencias" element={<Tabela />} />

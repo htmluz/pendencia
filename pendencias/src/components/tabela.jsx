@@ -3,10 +3,10 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useState, useEffect } from 'react'
 import ReactPaginate from 'react-paginate';
 import { BiCommentDetail, BiEdit } from "react-icons/bi";
-import { AiOutlineCheckSquare, AiOutlinePlus, AiOutlineReload } from "react-icons/ai";
+import { AiOutlineCheckSquare, AiOutlinePlus } from "react-icons/ai";
 import { BsClipboard } from "react-icons/bs"
 import { PiWarningFill, PiWarningOctagonFill } from "react-icons/pi"
-import { FaSortDown, FaSortUp } from "react-icons/fa";
+import { FaSortDown, FaSortUp, FaQuestion, FaCheck } from "react-icons/fa";
 import ModalAndamento from './modalandamento';
 import ModalNovaPendencia from './modalnovapendencia';
 import ModalFecharPendencia from './modalFecharPendencia';
@@ -19,7 +19,11 @@ import axios from '../api/axios';
 
 function Tabela() { 
     const axiosPrivate = useAxiosPrivate();
+    const navigate = useNavigate();
+    const [col, setCol] = useState("");
+    const [order, setOrder] = useState("asc")
     const [idOut, setIdOut] = useState(null);
+    const [unidade, setUnidade] = useState("TIO");
     const [loading, setLoading] = useState(false);
     const [position, setPosition] = useState({ top: 0, right: 0 });
     const [modalNova, setModalNova] = useState(false);
@@ -27,22 +31,19 @@ function Tabela() {
     const [pendencias, setPendencias] = useState([]);
     const [modalAndam, setModalAndam] = useState(true);
     const [totalPages, setTotalPages] = useState(0);
-    const [unidade, setUnidade] = useState("TIO");
     const [currentPage, setCurrentPage] = useState(0);
     const [modalFechar, setModalFechar] = useState(true);
     const [modalEditar, setModalEditar] = useState(true);
     const [modalDetalhe, setModalDetalhe] = useState(true);
     const [isCheckedUni, setIsCheckedUni] = useState(false);
     const [pendenciaEdit, setPendenciaEdit] = useState(null);
+    const [isCheckedManu, setIsCheckedManu] = useState(false);
     const [pendenciaFechar, setPendenciaFechar] = useState(null);
     const [isElementVisible, setElementVisible] = useState(false);
     const [pendenciaDetalhe, setPendenciaDetalhe] = useState(null);
     const [pendenciasAbertas, setPendenciasAbertas] = useState([]);
     const [pendenciasFinalizadas, setPendenciasFinalizadas] = useState([]);
     const [searchValue, setSearchValue] = useState("titulo");
-    const navigate = useNavigate();
-    const [order, setOrder] = useState("asc")
-    const [col, setCol] = useState("");
 
     const [pendenciasabertaspag, setPendenciasabertaspag] = useState([]);
     const [pendenciasfinalizadaspag, setPendenciasfinalizadaspag] = useState([]);
@@ -75,10 +76,9 @@ function Tabela() {
             const response = await axiosPrivate.get('/pendencias/get/openTIO');
             setLoading(false);
             setPendencias(response.data);
-            const pendab = response.data.filter((pendencia) => pendencia.complete == false)
-            setTotalPages(Math.ceil(pendab.length / itemsPerPage))
-            setPendenciasAbertas(pendab)
-            // setPendenciasFinalizadas(response.data.filter((pendencia) => pendencia.complete == true))
+            const pendab = response.data.filter((pendencia) => pendencia.complete == false);
+            setTotalPages(Math.ceil(pendab.length / itemsPerPage));
+            setPendenciasAbertas(pendab);
         } catch (err) {
             console.log(err)
         }
@@ -181,6 +181,11 @@ function Tabela() {
             setUnidade("SYGO")
         } else (setUnidade("TIO"))
         setIsCheckedUni(!isCheckedUni);
+    }
+
+    const handleCheckboxChangeManu = () => { //troca o valor entre unidades
+        setIsCheckedManu(!isCheckedManu);
+        console.log(isCheckedManu);
     }
 
     function setarId(id) {  //função usada pra enviar id para os componentes que precisa, modal editar, modal fechar e tabela de andamentos
@@ -325,6 +330,21 @@ function Tabela() {
                             SYGO
                         </span>
                 </label>
+                <div className='mt-1 ml-4 text-[#ffffffde] flex'>
+                    <input 
+                        className='sr-only'  
+                        id='manutencao' 
+                        type='checkbox'
+                        onChange={handleCheckboxChangeManu}
+                        checked={isCheckedManu}
+                    />
+                    <span className='flex items-center rounded w-4 h-4 bg-[#343434] mr-1 px-1'>
+                        {isCheckedManu && <FaCheck className=' text-xs' />}
+                    </span>
+                    <label htmlFor='manutencao'>
+                        {isCheckedManu ? "Mostrar manutenções" : "Esconder manutenções"}
+                    </label>
+                </div>
                 <div className='ml-auto w-3/5'>
                     <input id="search" placeholder='Procurar Pendência' className='pl-1 rounded-l bg-[#343434] hover:bg-[#1b1b1b] w-2/4 transition focus:outline-none focus:bg-[#1b1b1b]' onChange={handleSearch} type="text" />
                     <select value={searchValue} onChange={(event) => setSearchValue(event.target.value)} className='text-[#9CA3AF] pl-1 rounded-r bg-[#343434] hover:bg-[#1b1b1b] transition focus:outline-none focus:bg-[#1b1b1b] text-center' id='search'>
@@ -380,48 +400,51 @@ function Tabela() {
                             </tr>
                         </thead>
                         <tbody>
-                            {pendenciasabertaspag.filter(item => item.unidade === unidade).map((item) => (
-                                <tr className='font-system text-sm hover:bg-[#12121266] transition-all cursor-default leading-6' key={item.id}>
-                                    <td data-id={item.id} onClick={clickDetalhePendencia} className='pl-1' >{item.titulo}</td>
-                                    <td data-id={item.id} onClick={clickDetalhePendencia}>{item.tipo}</td>
-                                    <td data-id={item.id} onClick={clickDetalhePendencia}>{item.responsavel}</td>
-                                    <td data-id={item.id} onClick={clickDetalhePendencia}>{formataData(item.dateinit)}</td>
-                                    <td data-id={item.id} onClick={clickDetalhePendencia}>
-                                        <div className='flex'>
-                                            {formataData(item.dateend)}
-                                            {dataAviso(item.dateend) ? <PiWarningOctagonFill className='mt-1 ml-1 text-red-500' /> : null}
-                                        </div>
+                            {pendenciasabertaspag
+                                .filter(item => item.unidade === unidade)
+                                .filter(item => isCheckedManu ? item.tipo !== "Campanha de Manutenção" : true)
+                                .map((item) => (
+                                    <tr className='font-system text-sm hover:bg-[#12121266] transition-all cursor-default leading-6' key={item.id}>
+                                        <td data-id={item.id} onClick={clickDetalhePendencia} className='pl-1' >{item.titulo}</td>
+                                        <td data-id={item.id} onClick={clickDetalhePendencia}>{item.tipo}</td>
+                                        <td data-id={item.id} onClick={clickDetalhePendencia}>{item.responsavel}</td>
+                                        <td data-id={item.id} onClick={clickDetalhePendencia}>{formataData(item.dateinit)}</td>
+                                        <td data-id={item.id} onClick={clickDetalhePendencia}>
+                                            <div className='flex'>
+                                                {formataData(item.dateend)}
+                                                {dataAviso(item.dateend) ? <PiWarningOctagonFill className='mt-1 ml-1 text-red-500' /> : null}
+                                            </div>
+                                            </td>
+                                        <td data-id={item.id} className='flex' onClick={clickDetalhePendencia}>
+                                            {formataData(item.dateatt)}
+                                            {dataAviso(item.dateatt) ? <PiWarningFill className='mt-1 ml-1 text-yellow-500' /> : null}
                                         </td>
-                                    <td data-id={item.id} className='flex' onClick={clickDetalhePendencia}>
-                                        {formataData(item.dateatt)}
-                                        {dataAviso(item.dateatt) ? <PiWarningFill className='mt-1 ml-1 text-yellow-500' /> : null}
-                                    </td>
-                                    <td>{item.taskid ? (
-                                        <div onClick={() => {navigator.clipboard.writeText(item.taskid)}} className='flex hover:text-[#aaaaaa]'>
-                                            <BsClipboard className='mt-1 mr-1'/>
-                                            {item.taskid}
-                                        </div>
-                                    ) : null}
-                                    </td>
-                                    <td>{item.incidenturl ? (
-                                        <a className='underline hover:text-[#aaaaaa]' href={item.incidenturl} target='_blank'>Incidente</a>
+                                        <td>{item.taskid ? (
+                                            <div onClick={() => {navigator.clipboard.writeText(item.taskid)}} className='flex hover:text-[#aaaaaa]'>
+                                                <BsClipboard className='mt-1 mr-1'/>
+                                                {item.taskid}
+                                            </div>
                                         ) : null}
-                                    </td>
-                                    <td className='pr-0'>
-                                        <div className='flex flex-row pr-0'>
-                                            <a 
-                                                onMouseOver={item.andamento.length > 0 ? handleMouseOver : null }
-                                                onMouseLeave={handleMouseOut}
-                                                data-id={item.id} 
-                                                onClick={clickAndamentoPendencia} 
-                                                className={`cursor-default ${item.andamento.length > 0 ? 'hover:text-[#aaaaaa]' : 'text-[#666666]'}`} >
-                                                <BiCommentDetail /> 
-                                            </a>
-                                            <a data-id={item.id} onClick={clickEditarPendencia} className='cursor-default hover:text-[#aaaaaa] transition-all'><BiEdit /> </a>
-                                            <a data-id={item.id} onClick={clickEncerrarPendencia} className='cursor-default hover:text-[#aaaaaa] transition-all'><AiOutlineCheckSquare /></a>
-                                        </div>
-                                    </td>
-                                </tr>
+                                        </td>
+                                        <td>{item.incidenturl ? (
+                                            <a className='underline hover:text-[#aaaaaa]' href={item.incidenturl} target='_blank'>Incidente</a>
+                                            ) : null}
+                                        </td>
+                                        <td className='pr-0'>
+                                            <div className='flex flex-row pr-0'>
+                                                <a 
+                                                    onMouseOver={item.andamento.length > 0 ? handleMouseOver : null }
+                                                    onMouseLeave={handleMouseOut}
+                                                    data-id={item.id} 
+                                                    onClick={clickAndamentoPendencia} 
+                                                    className={`cursor-default ${item.andamento.length > 0 ? 'hover:text-[#aaaaaa]' : 'text-[#666666]'}`} >
+                                                    <BiCommentDetail /> 
+                                                </a>
+                                                <a data-id={item.id} onClick={clickEditarPendencia} className='cursor-default hover:text-[#aaaaaa] transition-all'><BiEdit /> </a>
+                                                <a data-id={item.id} onClick={clickEncerrarPendencia} className='cursor-default hover:text-[#aaaaaa] transition-all'><AiOutlineCheckSquare /></a>
+                                            </div>
+                                        </td>
+                                    </tr>
                             ))}
                         </tbody>
                     </table>
@@ -461,66 +484,71 @@ function Tabela() {
                             </tr>
                         </thead>
                         <tbody>
-                            {isCheckedUni ? pendenciasFinalizadas.filter(item => item.unidade === "SYGO").map((item) => (
-                                <tr className='font-system text-sm hover:bg-[#12121266] transition-all cursor-default leading-6' key={item.id}>
-                                    <td data-id={item.id} onClick={clickDetalhePendencia} className='pl-1' >{item.titulo}</td>
-                                    <td data-id={item.id} onClick={clickDetalhePendencia}>{item.tipo}</td>
-                                    <td data-id={item.id} onClick={clickDetalhePendencia}>{item.responsavel}</td>
-                                    <td data-id={item.id} onClick={clickDetalhePendencia}>{formataData(item.dateinit)}</td>
-                                    <td data-id={item.id} onClick={clickDetalhePendencia}>{formataData(item.dateend)}</td>
-                                    <td>{item.taskid ? (
-                                        <div onClick={() => {navigator.clipboard.writeText(item.taskid)}} className='flex hover:text-[#aaaaaa]'>
-                                            <BsClipboard className='mt-1 mr-1'/>
-                                            {item.taskid}
-                                        </div>
-                                    ) : null}
-                                    </td>
-                                    <td>{item.incidenturl ? (
-                                        <a className='underline hover:text-[#aaaaaa]' href={item.incidenturl} target='_blank'>Incidente</a>
+                            {isCheckedUni ? pendenciasFinalizadas
+                                .filter(item => item.unidade === "SYGO")
+                                .filter(item => isCheckedManu ? item.tipo !== "Campanha de Manutenção" : true)
+                                .map((item) => (
+                                    <tr className='font-system text-sm hover:bg-[#12121266] transition-all cursor-default leading-6' key={item.id}>
+                                        <td data-id={item.id} onClick={clickDetalhePendencia} className='pl-1' >{item.titulo}</td>
+                                        <td data-id={item.id} onClick={clickDetalhePendencia}>{item.tipo}</td>
+                                        <td data-id={item.id} onClick={clickDetalhePendencia}>{item.responsavel}</td>
+                                        <td data-id={item.id} onClick={clickDetalhePendencia}>{formataData(item.dateinit)}</td>
+                                        <td data-id={item.id} onClick={clickDetalhePendencia}>{formataData(item.dateend)}</td>
+                                        <td>{item.taskid ? (
+                                            <div onClick={() => {navigator.clipboard.writeText(item.taskid)}} className='flex hover:text-[#aaaaaa]'>
+                                                <BsClipboard className='mt-1 mr-1'/>
+                                                {item.taskid}
+                                            </div>
                                         ) : null}
-                                    </td>
-                                    <td className='pr-0'>
-                                        <div className='flex flex-row pr-0'>
-                                            <a 
-                                                onMouseOver={item.andamento.length > 0 ? handleMouseOver : null }
-                                                onMouseLeave={handleMouseOut}
-                                                data-id={item.id} 
-                                                className={`cursor-default ${item.andamento.length > 0 ? 'hover:text-[#aaaaaa]' : 'text-[#666666]'}`} >
-                                                <BiCommentDetail /> 
-                                            </a>
-                                        </div>
-                                    </td>
-                                </tr>
-                            )) : pendenciasfinalizadaspag.map((item) => (
-                                <tr className='font-system text-sm hover:bg-[#12121266] transition-all cursor-default leading-6' key={item.id}>
-                                    <td data-id={item.id} onClick={clickDetalhePendencia} className='pl-1' >{item.titulo}</td>
-                                    <td data-id={item.id} onClick={clickDetalhePendencia}>{item.tipo}</td>
-                                    <td data-id={item.id} onClick={clickDetalhePendencia}>{item.responsavel}</td>
-                                    <td data-id={item.id} onClick={clickDetalhePendencia}>{formataData(item.dateinit)}</td>
-                                    <td data-id={item.id} onClick={clickDetalhePendencia}>{formataData(item.dateend)}</td>
-                                    <td>{item.taskid ? (
-                                        <div onClick={() => {navigator.clipboard.writeText(item.taskid)}} className='flex hover:text-[#aaaaaa]'>
-                                            <BsClipboard className='mt-1 mr-1'/>
-                                            {item.taskid}
-                                        </div>
-                                    ) : null}
-                                    </td>
-                                    <td>{item.incidenturl ? (
-                                        <a className='underline hover:text-[#aaaaaa]' href={item.incidenturl} target='_blank'>Incidente</a>
+                                        </td>
+                                        <td>{item.incidenturl ? (
+                                            <a className='underline hover:text-[#aaaaaa]' href={item.incidenturl} target='_blank'>Incidente</a>
+                                            ) : null}
+                                        </td>
+                                        <td className='pr-0'>
+                                            <div className='flex flex-row pr-0'>
+                                                <a 
+                                                    onMouseOver={item.andamento.length > 0 ? handleMouseOver : null }
+                                                    onMouseLeave={handleMouseOut}
+                                                    data-id={item.id} 
+                                                    className={`cursor-default ${item.andamento.length > 0 ? 'hover:text-[#aaaaaa]' : 'text-[#666666]'}`} >
+                                                    <BiCommentDetail /> 
+                                                </a>
+                                            </div>
+                                        </td>
+                                    </tr>
+                            )) : pendenciasfinalizadaspag
+                                .filter(item => isCheckedManu ? item.tipo !== "Campanha de Manutenção" : true)
+                                .map((item) => (
+                                    <tr className='font-system text-sm hover:bg-[#12121266] transition-all cursor-default leading-6' key={item.id}>
+                                        <td data-id={item.id} onClick={clickDetalhePendencia} className='pl-1' >{item.titulo}</td>
+                                        <td data-id={item.id} onClick={clickDetalhePendencia}>{item.tipo}</td>
+                                        <td data-id={item.id} onClick={clickDetalhePendencia}>{item.responsavel}</td>
+                                        <td data-id={item.id} onClick={clickDetalhePendencia}>{formataData(item.dateinit)}</td>
+                                        <td data-id={item.id} onClick={clickDetalhePendencia}>{formataData(item.dateend)}</td>
+                                        <td>{item.taskid ? (
+                                            <div onClick={() => {navigator.clipboard.writeText(item.taskid)}} className='flex hover:text-[#aaaaaa]'>
+                                                <BsClipboard className='mt-1 mr-1'/>
+                                                {item.taskid}
+                                            </div>
                                         ) : null}
-                                    </td>
-                                    <td className='pr-0'>
-                                        <div className='flex flex-row pr-0'>
-                                            <a 
-                                                onMouseOver={item.andamento.length > 0 ? handleMouseOver : null }
-                                                onMouseLeave={handleMouseOut}
-                                                data-id={item.id} 
-                                                className={`cursor-default ${item.andamento.length > 0 ? 'hover:text-[#aaaaaa]' : 'text-[#666666]'}`} >
-                                                <BiCommentDetail /> 
-                                            </a>
-                                        </div>
-                                    </td>
-                                </tr>
+                                        </td>
+                                        <td>{item.incidenturl ? (
+                                            <a className='underline hover:text-[#aaaaaa]' href={item.incidenturl} target='_blank'>Incidente</a>
+                                            ) : null}
+                                        </td>
+                                        <td className='pr-0'>
+                                            <div className='flex flex-row pr-0'>
+                                                <a 
+                                                    onMouseOver={item.andamento.length > 0 ? handleMouseOver : null }
+                                                    onMouseLeave={handleMouseOut}
+                                                    data-id={item.id} 
+                                                    className={`cursor-default ${item.andamento.length > 0 ? 'hover:text-[#aaaaaa]' : 'text-[#666666]'}`} >
+                                                    <BiCommentDetail /> 
+                                                </a>
+                                            </div>
+                                        </td>
+                                    </tr>
                                 ))}
                         </tbody>
                     </table>
@@ -554,14 +582,14 @@ function Tabela() {
                         nextLinkClassName={'cursor-default w-full'}
                         nextLabel={">"}
                         nextClassName='hover:bg-[#292929] transition-all rounded w-[15px]'
-                        disabledClassName=''
                         pageLinkClassName='cursor-default'
                         pageClassName='mx-1 hover:bg-[#292929] transition-all rounded'
                         activeClassName='bg-[#242424]'
                         breakLabel="..."
-                        pageRangeDisplayed={5}
+                        pageRangeDisplayed={20}
                     />
                 </div>
+                <FaQuestion className='mb-1 mr-2 mt-1 float-right cursor-help' title='Bugs ou sugestões favor informar no bitrix Luiz Eduardo Krol.' />
                 <button className='mr-1 mb-1 float-right text-sm font-medium cursor-default select-none px-[10px] p-[3px] bg-[#343434] hover:bg-[#1b1b1b] transition-all rounded-md' onClick={handleLogout}>Logout</button>
                 <Link className='mr-1 mb-1 float-right text-sm font-medium cursor-default select-none px-[10px] p-[3px] bg-[#343434] hover:bg-[#1b1b1b] transition-all rounded-md' to="/gerencia">Gerência</Link>
             </footer>

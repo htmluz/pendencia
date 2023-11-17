@@ -1,4 +1,5 @@
 import { Link, useNavigate } from "react-router-dom"
+import { FaQuestion } from "react-icons/fa";
 import axios from "../api/axios";
 
 
@@ -22,6 +23,7 @@ function Footer() {
             <Link className='mb-1 float-left ml-1 text-sm font-medium cursor-default select-none px-[10px] p-[3px] bg-[#343434] hover:bg-[#1b1b1b] transition-all rounded-md' to="/pendencias">Pendencias</ Link>
             <Link className='mb-1 float-right mr-1 text-sm font-medium cursor-default select-none px-[10px] p-[3px] bg-[#343434] hover:bg-[#1b1b1b] transition-all rounded-md' to="/gerencia">Gerência</Link>
             <button className='mr-1 mb-1 float-right text-sm font-medium cursor-default select-none px-[10px] p-[3px] bg-[#343434] hover:bg-[#1b1b1b] transition-all rounded-md' onClick={handleLogout}>Logout</button>
+            <FaQuestion className='mb-1 mr-2 mt-1 float-right cursor-help' title='Bugs ou sugestões favor informar no bitrix Luiz Eduardo Krol.' />
         </footer>
 )};
 
