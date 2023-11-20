@@ -20,7 +20,7 @@ import axios from '../api/axios';
 function Tabela() { 
     const axiosPrivate = useAxiosPrivate();
     const navigate = useNavigate();
-    const [col, setCol] = useState("");
+    const [col, setCol] = useState("dateinit");
     const [order, setOrder] = useState("asc")
     const [idOut, setIdOut] = useState(null);
     const [unidade, setUnidade] = useState("TIO");
@@ -42,7 +42,9 @@ function Tabela() {
     const [isElementVisible, setElementVisible] = useState(false);
     const [pendenciaDetalhe, setPendenciaDetalhe] = useState(null);
     const [pendenciasAbertas, setPendenciasAbertas] = useState([]);
+    const [pendenciasAbertasSYGO, setPendenciasAbertasSYGO] = useState([]);
     const [pendenciasFinalizadas, setPendenciasFinalizadas] = useState([]);
+    const [pendenciasFinalizadasSYGO, setPendenciasFinalizadasSYGO] = useState([]);
     const [searchValue, setSearchValue] = useState("titulo");
 
     const [pendenciasabertaspag, setPendenciasabertaspag] = useState([]);
@@ -52,44 +54,92 @@ function Tabela() {
     let endIndex = 31;
 
 
+
     useEffect(() => {
         loadPendencia();
         loadPendenciaComplete();
+        loadPendenciaSYGO();
+        loadPendenciaCompleteSYGO();
     }, []) 
     
     useEffect(() => {
         startIndex = currentPage * itemsPerPage;
         endIndex = startIndex + itemsPerPage;
-        setPendenciasabertaspag(pendenciasAbertas.slice(startIndex, endIndex));
-    }, [currentPage, pendenciasAbertas])
+        if (!isCheckedUni && !isCheckedManu) {
+            setPendenciasabertaspag(pendenciasAbertas
+                .filter((item) => item.tipo !== "Campanha de Manutenção")
+                .slice(startIndex, endIndex));
+        } else if (isCheckedUni && !isCheckedManu) {
+            setPendenciasabertaspag(pendenciasAbertasSYGO.slice(startIndex, endIndex));
+        } else {
+            setPendenciasabertaspag(pendenciasAbertas
+                .filter((item) => item.tipo === "Campanha de Manutenção")
+                .slice(startIndex, endIndex));
+        }
+    }, [currentPage, pendenciasAbertas, isCheckedUni, isCheckedManu, pendenciasAbertasSYGO])
 
     useEffect(() => {
         startIndex = currentPage * itemsPerPage;
         endIndex = startIndex + itemsPerPage;
-        setPendenciasfinalizadaspag(pendenciasFinalizadas.slice(startIndex, endIndex));
-    }, [currentPage, pendenciasFinalizadas])
+        if (!isCheckedUni && !isCheckedManu) {
+            setPendenciasfinalizadaspag(pendenciasFinalizadas
+                .filter((item) => item.tipo !== "Campanha de Manutenção")
+                .slice(startIndex, endIndex));
+        } else if (isCheckedUni && !isCheckedManu) {
+            setPendenciasfinalizadaspag(pendenciasFinalizadasSYGO.slice(startIndex, endIndex));
+        } else {
+            setPendenciasfinalizadaspag(pendenciasFinalizadas
+                .filter((item) => item.tipo === "Campanha de Manutenção")
+                .slice(startIndex, endIndex));
+        }
+    }, [currentPage, isCheckedUni, isCheckedManu, pendenciasFinalizadas, pendenciasFinalizadasSYGO])
+
+    useEffect(() => {
+        const sorted = [...pendenciasAbertas].sort((a, b) => 
+        a[col] > b[col] ? 1 : -1
+        )
+        setPendenciasAbertas(sorted);
+    }, [!loading])
+
 
 
     const loadPendencia = async () => {
         setLoading(true);
         try {
             const response = await axiosPrivate.get('/pendencias/get/openTIO');
-            setLoading(false);
             setPendencias(response.data);
-            const pendab = response.data.filter((pendencia) => pendencia.complete == false);
-            setTotalPages(Math.ceil(pendab.length / itemsPerPage));
-            setPendenciasAbertas(pendab);
+            setTotalPages(Math.ceil(response.data.filter(item => item.tipo !== "Campanha de Manutenção").length / itemsPerPage));
+            setPendenciasAbertas(response.data);
+            setLoading(false);
         } catch (err) {
             console.log(err)
         }
     }
 
     const loadPendenciaComplete = async () => {
-        setLoading(true);
         try {
             const response = await axiosPrivate.get('/pendencias/get/completeTIO');
-            setLoading(false);
             setPendenciasFinalizadas(response.data);
+        } catch (err) {
+            console.log(err);
+        }
+    }
+
+    const loadPendenciaSYGO = async () => {
+        setLoading(true);
+        try {
+            const response = await axiosPrivate.get('/pendencias/get/openSYGO');
+            setPendenciasAbertasSYGO(response.data);
+            setLoading(false);
+        } catch (err) {
+            console.log(err)
+        }
+    }
+
+    const loadPendenciaCompleteSYGO = async () => {
+        try {
+            const response = await axiosPrivate.get('/pendencias/get/completeSYGO');
+            setPendenciasFinalizadasSYGO(response.data);
         } catch (err) {
             console.log(err);
         }
@@ -112,23 +162,31 @@ function Tabela() {
     }
 
     
-    useEffect(() => {           //seta a quantia de paginas
-        if (isChecked && !isCheckedUni) {
-            setTotalPages(Math.ceil(pendenciasFinalizadas.filter(item => item.unidade === unidade).length / itemsPerPage));
-        } else if (isChecked && isCheckedUni) {
-            setTotalPages(Math.ceil(pendenciasFinalizadas.filter(item => item.unidade === unidade).length / itemsPerPage));
-        } else if (!isChecked && !isCheckedUni) {
-            setTotalPages(Math.ceil(pendenciasAbertas.filter(item => item.unidade === unidade).length / itemsPerPage));
+    useEffect(() => {                                               //seta a quantia de paginas
+        if (isChecked && !isCheckedUni && !isCheckedManu) {         //concluidas tio
+            setTotalPages(Math.ceil(pendenciasFinalizadas.filter(item => item.unidade === unidade && item.tipo !== "Campanha de Manutenção").length / itemsPerPage));
             setCurrentPage(0);
-        } else if (!isChecked && isCheckedUni) {
-            setTotalPages(Math.ceil(pendenciasAbertas.filter(item => item.unidade === unidade).length / itemsPerPage));
+        } else if (isChecked && isCheckedUni && !isCheckedManu) {   //concluidas sygo
+            setTotalPages(Math.ceil(pendenciasFinalizadasSYGO.filter(item => item.unidade === unidade && item.tipo !== "Campanha de Manutenção").length / itemsPerPage));
+            setCurrentPage(0);
+        } else if (!isChecked && !isCheckedUni && !isCheckedManu) { //abertas tio
+            setTotalPages(Math.ceil(pendenciasAbertas.filter(item => item.unidade === unidade && item.tipo !== "Campanha de Manutenção").length / itemsPerPage));
+            setCurrentPage(0);
+        } else if (!isChecked && isCheckedUni && !isCheckedManu) {  //abertas sygo
+            setTotalPages(Math.ceil(pendenciasAbertasSYGO.filter(item => item.unidade === unidade && item.tipo !== "Campanha de Manutenção").length / itemsPerPage));
             setCurrentPage(0); 
+        } else if (!isChecked && isCheckedManu) {                   //abertas manu
+            setTotalPages(Math.ceil(pendenciasAbertas.filter(item => item.tipo === "Campanha de Manutenção").length / itemsPerPage));
+            setCurrentPage(0);
+        } else if (isChecked && isCheckedManu) {                    //concluidas manu
+            setTotalPages(Math.ceil(pendenciasFinalizadas.filter(item => item.tipo === "Campanha de Manutenção").length / itemsPerPage));
+            setCurrentPage(0);
         }
     }, [!isChecked, isCheckedUni])
 
     const handleSearch = (event) => {
         const query = event.target.value.toLowerCase();
-        if (!isChecked) {
+        if (!isChecked && !isCheckedUni) {
             if (query === "") {
                 setPendenciasabertaspag(pendenciasAbertas.slice(startIndex, endIndex));
                 setCurrentPage(0);
@@ -139,12 +197,34 @@ function Tabela() {
                     : item[searchValue].toLowerCase().includes(event.target.value.toLowerCase())
                 )
             ))}
-        } else {
+        } else if (!isChecked && isCheckedUni) {
+            if (query === "") {
+                setPendenciasabertaspag(pendenciasAbertasSYGO.slice(startIndex, endIndex));
+                setCurrentPage(0);
+            } else {
+                setPendenciasabertaspag([...pendenciasAbertasSYGO].filter((item) =>
+                (searchValue === 'dateinit'
+                    ? item[searchValue].toLowerCase().includes(event.target.value.replace(/\//g, '-'))
+                    : item[searchValue].toLowerCase().includes(event.target.value.toLowerCase())
+                )
+            ))}
+        } else if (isChecked && !isChecked) {
             if (query === "") {
                 setPendenciasfinalizadaspag(pendenciasFinalizadas.slice(startIndex, endIndex));
                 setCurrentPage(0);
             } else {
                 setPendenciasfinalizadaspag([...pendenciasFinalizadas].filter((item) =>
+                (searchValue === 'dateinit'
+                    ? item[searchValue].toLowerCase().includes(event.target.value.replace(/\//g, '-'))
+                    : item[searchValue].toLowerCase().includes(event.target.value.toLowerCase())
+                )
+            ))}
+        } else {
+            if (query === "") {
+                setPendenciasfinalizadaspag(pendenciasFinalizadasSYGO.slice(startIndex, endIndex));
+                setCurrentPage(0);
+            } else {
+                setPendenciasfinalizadaspag([...pendenciasFinalizadasSYGO].filter((item) =>
                 (searchValue === 'dateinit'
                     ? item[searchValue].toLowerCase().includes(event.target.value.replace(/\//g, '-'))
                     : item[searchValue].toLowerCase().includes(event.target.value.toLowerCase())
@@ -181,11 +261,13 @@ function Tabela() {
             setUnidade("SYGO")
         } else (setUnidade("TIO"))
         setIsCheckedUni(!isCheckedUni);
+        if (isCheckedManu) {
+            setIsCheckedManu(false);
+        }
     }
 
     const handleCheckboxChangeManu = () => { //troca o valor entre unidades
         setIsCheckedManu(!isCheckedManu);
-        console.log(isCheckedManu);
     }
 
     function setarId(id) {  //função usada pra enviar id para os componentes que precisa, modal editar, modal fechar e tabela de andamentos
@@ -198,11 +280,21 @@ function Tabela() {
         if (modalFechar) {
             const idedit = event.currentTarget.dataset.id;
             setarId(idedit);
-            let pendenciabyId = pendencias.find((pendencia) => pendencia.id == idedit);
-            pendenciabyId = pendenciabyId.taskid;
-            setPendenciaFechar(pendenciabyId);
+            if (!isCheckedUni) {
+                let pendenciabyId = pendenciasAbertas.find((pendencia) => pendencia.id == idedit);
+                pendenciabyId = pendenciabyId.taskid;
+                setPendenciaFechar(pendenciabyId);
+            } else {
+                let pendenciabyId = pendenciasAbertasSYGO.find((pendencia) => pendencia.id == idedit);
+                pendenciabyId = pendenciabyId.taskid;
+                setPendenciaFechar(pendenciabyId);
+            }
         } else {
-            loadPendencia();
+            if (!isCheckedUni) {
+                loadPendencia();
+            } else {
+                loadPendenciaSYGO();
+            }
         }
     }
 
@@ -210,13 +302,26 @@ function Tabela() {
         if (modalEditar) {
             const idedit = event.currentTarget.dataset.id; //seto o id primeiro numa variavel pra usar ele dentro do if ainda
             setarId(idedit);
-            let pendenciabyId = pendencias.find((pendencia) => pendencia.id == idedit); //acho a pendencia pelo id 
-            pendenciabyId.dateatt = formataDataEdit(pendenciabyId.dateatt);  //formatando pra preencher o campo datetime-local, tá bugando a hora que edita ele edita na tabela tb
-            pendenciabyId.dateend = formataDataEdit(pendenciabyId.dateend);
-            pendenciabyId.dateinit = formataDataEdit(pendenciabyId.dateinit);
-            setPendenciaEdit(pendenciabyId);                //passo a pendencia que encontrei com os values ja pra preencher o modal
+            if (!isCheckedUni) {
+                let pendenciabyId = pendenciasAbertas.find((pendencia) => pendencia.id == idedit); //acho a pendencia pelo id 
+                pendenciabyId.dateatt = formataDataEdit(pendenciabyId.dateatt);  //formatando pra preencher o campo datetime-local, tá bugando a hora que edita ele edita na tabela tb
+                pendenciabyId.dateend = formataDataEdit(pendenciabyId.dateend);
+                pendenciabyId.dateinit = formataDataEdit(pendenciabyId.dateinit);
+                setPendenciaEdit(pendenciabyId);                //passo a pendencia que encontrei com os values ja pra preencher o modal
+            } else {
+                let pendenciabyId = pendenciasAbertasSYGO.find((pendencia) => pendencia.id == idedit);
+                pendenciabyId.dateatt = formataDataEdit(pendenciabyId.dateatt);
+                pendenciabyId.dateend = formataDataEdit(pendenciabyId.dateend);
+                pendenciabyId.dateinit = formataDataEdit(pendenciabyId.dateinit);
+                setPendenciaEdit(pendenciabyId);  
+            }
         } else {
-            loadPendencia();
+            if (!isCheckedUni) {
+                loadPendencia();
+            } else {
+                loadPendenciaSYGO();
+            }
+            
         }
         setModalEditar(current => !current);
     }
@@ -226,28 +331,46 @@ function Tabela() {
         if (modalAndam) {
             setarId(event.currentTarget.dataset.id);
         } else {
-            loadPendencia();
+            if (!isCheckedUni) {
+                loadPendencia();
+            } else {
+                loadPendenciaSYGO();
+            }
         }
     }
 
     const clickNovaPendencia = () => {
-      setModalNova(current => !current);
-        if (modalNova) {
-            loadPendencia();
-        } 
+        setModalNova(current => !current);
+            if (modalNova) {
+                if (!isCheckedUni) {
+                    loadPendencia();
+                } else {
+                    loadPendenciaSYGO()
+                }
+            } 
     }
 
     const clickDetalhePendencia = (event) => {
         if (modalDetalhe && !isChecked) {
             const idedit = event.currentTarget.dataset.id;
             setarId(idedit);
-            let pendenciabyId = pendencias.find((pendencia) => pendencia.id == idedit);
-            setPendenciaDetalhe(pendenciabyId);
+            if (!isCheckedUni) {
+                let pendenciabyId = pendencias.find((pendencia) => pendencia.id == idedit);
+                setPendenciaDetalhe(pendenciabyId);
+            } else {
+                let pendenciabyId = pendenciasAbertasSYGO.find((pendencia) => pendencia.id == idedit);
+                setPendenciaDetalhe(pendenciabyId);
+            }
         } else if (modalDetalhe && isChecked) {
             const idedit = event.currentTarget.dataset.id;
             setarId(idedit);
-            let pendenciabyId = pendenciasFinalizadas.find((pendencia) => pendencia.id == idedit);
-            setPendenciaDetalhe(pendenciabyId);
+            if (!isCheckedUni) {
+                let pendenciabyId = pendenciasFinalizadas.find((pendencia) => pendencia.id == idedit);
+                setPendenciaDetalhe(pendenciabyId);
+            } else {
+                let pendenciabyId = pendenciasFinalizadasSYGO.find((pendencia) => pendencia.id == idedit);
+                setPendenciaDetalhe(pendenciabyId);
+            }
         }
         setModalDetalhe(current => !current);
     }
@@ -275,7 +398,7 @@ function Tabela() {
 
     
     const sorting = (col) => {
-        if (!isChecked) {
+        if (!isChecked && !isCheckedUni) {
             if (order === "asc") {
                 const sorted = [...pendenciasAbertas].sort((a, b) => 
                 a[col] > b[col] ? 1 : -1
@@ -292,8 +415,7 @@ function Tabela() {
                 setCol(col);
                 setOrder("asc");
             }
-        }
-        if (isChecked) {
+        } else if (isChecked && !isCheckedUni) {
             if (order === "asc") {
                 const sorted = [...pendenciasFinalizadas].sort((a, b) => 
                 a[col] > b[col] ? 1 : -1
@@ -307,42 +429,79 @@ function Tabela() {
                 a[col] < b[col] ? 1 : -1
                 )
                 setPendenciasFinalizadas(sorted);
+                setCol(col);
+                setOrder("asc");
+            }
+        } else if (!isChecked && isCheckedUni) {
+            if (order === "asc") {
+                const sorted = [...pendenciasAbertasSYGO].sort((a, b) => 
+                a[col] > b[col] ? 1 : -1
+                )
+                setPendenciasAbertasSYGO(sorted);
+                setCol(col);
+                setOrder("dsc");
+            }
+            if (order === "dsc") {
+                const sorted = [...pendenciasAbertasSYGO].sort((a, b) => 
+                a[col] < b[col] ? 1 : -1
+                )
+                setPendenciasAbertasSYGO(sorted);
+                setCol(col);
+                setOrder("asc");
+            }
+        } else if (isChecked && isCheckedUni) {
+            if (order === "asc") {
+                const sorted = [...pendenciasFinalizadasSYGO].sort((a, b) => 
+                a[col] > b[col] ? 1 : -1
+                )
+                setPendenciasFinalizadasSYGO(sorted);
+                setCol(col);
+                setOrder("dsc");
+            }
+            if (order === "dsc") {
+                const sorted = [...pendenciasFinalizadasSYGO].sort((a, b) => 
+                a[col] < b[col] ? 1 : -1
+                )
+                setPendenciasFinalizadasSYGO(sorted);
                 setCol(col);
                 setOrder("asc");
             }
         }
     }
 
+    
+
     return (
         <>
             <nav className=' select-none flex flex-row justify-between max-h-10 px-2 py-2 text-sm text-[#ffffffde] bg-gradient-to-b from-[#212121]'>
-                <label className='mb-1 py-3 relative inline-flex cursor-default select-none items-center justify-center rounded-md bg-[#343434] p-[3px] '>
+                <label className='mb-1 py-3 relative inline-flex cursor-default select-none items-center justify-center rounded-l-md bg-[#343434] p-[3px] pr-0 '>
                         <input 
                             type="checkbox" 
                             className='sr-only'
                             checked={isCheckedUni}
-                            onChange={handleCheckboxChangeUni}
+                            onChange={() => {
+                                handleCheckboxChangeUni(), setIsChecked(false)
+                            }}
                         />
-                        <span className={`flex items-center space-x-[6px] rounded px-[14px] text-sm font-medium ${!isCheckedUni ? 'bg-[#242424]' : 'hover:bg-[#292929]'} transition-all`}>
+                        <span className={`flex items-center space-x-[6px] rounded px-[14px] text-sm font-medium ${!isCheckedUni && !isCheckedManu ? 'bg-[#242424]' : 'hover:bg-[#292929]'} transition-all`}>
                             TIO
                         </span>
-                        <span className={` flex items-center space-x-[6px] rounded px-[14px] text-sm font-medium ${isCheckedUni ? 'bg-[#242424]' : ' hover:bg-[#292929]'} transition-all`}>
+                        <span className={` flex items-center space-x-[6px] rounded px-[14px] text-sm font-medium ${isCheckedUni && !isCheckedManu ? 'bg-[#242424]' : ' hover:bg-[#292929]'} transition-all`}>
                             SYGO
                         </span>
                 </label>
-                <div className='mt-1 ml-4 text-[#ffffffde] flex'>
-                    <input 
-                        className='sr-only'  
-                        id='manutencao' 
-                        type='checkbox'
-                        onChange={handleCheckboxChangeManu}
-                        checked={isCheckedManu}
-                    />
-                    <span className='flex items-center rounded w-4 h-4 bg-[#343434] mr-1 px-1'>
-                        {isCheckedManu && <FaCheck className=' text-xs' />}
-                    </span>
-                    <label htmlFor='manutencao'>
-                        {isCheckedManu ? "Mostrar manutenções" : "Esconder manutenções"}
+                <div className='text-[#ffffffde] flex'>
+                    <label className='mb-1 py-3 relative inline-flex cursor-default select-none items-center justify-center rounded-r-md bg-[#343434] p-[3px] pl-0 '>
+                        <input 
+                            className='sr-only'  
+                            id='manutencao' 
+                            type='checkbox'
+                            onChange={handleCheckboxChangeManu}
+                            checked={isCheckedManu}
+                        />
+                        <span className={`flex items-center space-x-[6px] rounded px-[14px] text-sm font-medium ${isCheckedManu ? 'bg-[#242424]' : 'hover:bg-[#292929]'} transition-all`}>
+                            Manutenções Programadas
+                        </span>
                     </label>
                 </div>
                 <div className='ml-auto w-3/5'>
@@ -402,7 +561,6 @@ function Tabela() {
                         <tbody>
                             {pendenciasabertaspag
                                 .filter(item => item.unidade === unidade)
-                                .filter(item => isCheckedManu ? item.tipo !== "Campanha de Manutenção" : true)
                                 .map((item) => (
                                     <tr className='font-system text-sm hover:bg-[#12121266] transition-all cursor-default leading-6' key={item.id}>
                                         <td data-id={item.id} onClick={clickDetalhePendencia} className='pl-1' >{item.titulo}</td>
@@ -486,7 +644,6 @@ function Tabela() {
                         <tbody>
                             {isCheckedUni ? pendenciasFinalizadas
                                 .filter(item => item.unidade === "SYGO")
-                                .filter(item => isCheckedManu ? item.tipo !== "Campanha de Manutenção" : true)
                                 .map((item) => (
                                     <tr className='font-system text-sm hover:bg-[#12121266] transition-all cursor-default leading-6' key={item.id}>
                                         <td data-id={item.id} onClick={clickDetalhePendencia} className='pl-1' >{item.titulo}</td>
@@ -518,7 +675,6 @@ function Tabela() {
                                         </td>
                                     </tr>
                             )) : pendenciasfinalizadaspag
-                                .filter(item => isCheckedManu ? item.tipo !== "Campanha de Manutenção" : true)
                                 .map((item) => (
                                     <tr className='font-system text-sm hover:bg-[#12121266] transition-all cursor-default leading-6' key={item.id}>
                                         <td data-id={item.id} onClick={clickDetalhePendencia} className='pl-1' >{item.titulo}</td>

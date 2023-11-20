@@ -144,7 +144,7 @@ function ModalNovaPendencia( { fecharModal, Unidade }) {
                                         </div>
                                     </div>
                                     <div className='flex mt-6'>
-                                        <button onClick={fecharModal} className='transition-colors mr-auto bg-[#efefef] hover:bg-[#dddddd] rounded px-3 py-2 w-48p'>Fechar</button>
+                                        <button type='button' onClick={fecharModal} className='transition-colors mr-auto bg-[#efefef] hover:bg-[#dddddd] rounded px-3 py-2 w-48p'>Fechar</button>
                                         <button type="submit" className='transition-colors  bg-[#187bcd] hover:bg-[#1167b1] rounded px-3 py-2 w-48p text-white'>Enviar</button>
                                     </div>
                                 </div>
