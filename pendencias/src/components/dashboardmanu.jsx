@@ -30,7 +30,7 @@ function DashboardManu() {
     function formataData(date) {
         date = moment(date);
         date.tz('America/Sao_Paulo');
-        return date.format('YYYY/MM/DD HH:mm')
+        return date.format('DD/MM HH:mm')
     } 
 
     function dataAviso(date) {
@@ -47,6 +47,12 @@ function DashboardManu() {
         setPendencias(sorted);
     }
 
+    function formataIncidente(incidente) {
+        const reg = /iCodIncidente=(\d+)/;
+        const match = incidente.match(reg);
+        return match?.[1]
+    }
+
 
     return (
         <>
@@ -57,7 +63,8 @@ function DashboardManu() {
                         <th>Responsável</th>
                         <th>Início</th>
                         <th>Previsão</th>
-                        <th>Atualizar em</th>
+                        <th>Task</th>
+                        <th>Incidente</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -72,9 +79,11 @@ function DashboardManu() {
                                     {dataAviso(item.dateend) ? <PiWarningOctagonFill className='mt-1 ml-1 text-red-500' /> : null}
                                 </div>
                             </td>
-                            <td className='flex'>
-                                {formataData(item.dateatt)}
-                                {dataAviso(item.dateatt) ? <PiWarningFill className='mt-1 ml-1 text-yellow-500' /> : null}
+                            <td className='flex'>{item.taskid}</td>
+                            <td>{item.incidenturl ?
+                                <a className='hover:text-[#aaaaaa]' href={item.incidenturl} target='_blank'>{formataIncidente(item.incidenturl)}</a>
+                                : null
+                            }
                             </td>
                         </tr>
                     )) : null}

@@ -92,7 +92,7 @@ function Tabela() {
                 .filter((item) => item.tipo === "Campanha de Manutenção")
                 .slice(startIndex, endIndex));
         }
-    }, [currentPage, isCheckedUni, isCheckedManu, pendenciasFinalizadas, pendenciasFinalizadasSYGO])
+    }, [currentPage, pendenciasFinalizadas, isCheckedUni, isCheckedManu, pendenciasFinalizadasSYGO])
 
     useEffect(() => {
         const sorted = [...pendenciasAbertas].sort((a, b) => 

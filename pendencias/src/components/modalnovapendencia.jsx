@@ -15,7 +15,8 @@ function ModalNovaPendencia( { fecharModal, Unidade }) {
         taskid: "",
         incidenturl: "",
         abertura: {
-                user: ""
+                user: "",
+                dateopening: moment().tz("America/Sao_Paulo")
             },
         fechamento: {
                 user: ""
