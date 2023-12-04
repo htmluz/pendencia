@@ -267,6 +267,9 @@ function Tabela() {
     }
 
     const handleCheckboxChangeManu = () => { //troca o valor entre unidades
+        if (isCheckedUni) {
+            handleCheckboxChangeUni();
+        }
         setIsCheckedManu(!isCheckedManu);
     }
 
