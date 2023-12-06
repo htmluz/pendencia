@@ -260,12 +260,23 @@ function Tabela() {
         if (!isCheckedUni) {
             setUnidade("SYGO")
         } else (setUnidade("TIO"))
-        setIsCheckedUni(!isCheckedUni);
-        if (isCheckedManu) {
-            setIsCheckedManu(false);
+            setIsCheckedUni(!isCheckedUni);
+                if (isCheckedManu) {
+                    setIsCheckedManu(false);
         }
     }
 
+    const handleCheckboxChangeUni2 = (event) => {
+        let uni = event.currentTarget.nextSibling.textContent;
+        setUnidade(uni);
+        setIsCheckedManu(false);
+        if (uni === "TIO") {
+            setIsCheckedUni(false);
+        } else if (uni === "SYGO") {
+            setIsCheckedUni(true);
+        }
+    }
+    
     const handleCheckboxChangeManu = () => { //troca o valor entre unidades
         if (isCheckedUni) {
             handleCheckboxChangeUni();
@@ -486,23 +497,27 @@ function Tabela() {
     return (
         <>
             <nav className=' select-none flex flex-row justify-between max-h-10 px-2 py-2 text-sm text-[#ffffffde] bg-gradient-to-b from-[#212121]'>
-                <label className='mb-1 py-3 relative inline-flex cursor-default select-none items-center justify-center rounded-l-md bg-[#343434] p-[3px] pr-0 '>
-                        <input 
-                            type="checkbox" 
+                <div className='text-[#ffffffde] flex'>
+                    <label className='mb-1 py-3 relative inline-flex cursor-default select-none items-center justify-center rounded-l-md bg-[#343434] p-[3px] pr-0'>
+                        <input
+                            type='button' 
                             className='sr-only'
-                            checked={isCheckedUni}
-                            onChange={() => {
-                                handleCheckboxChangeUni(), setIsChecked(false)
-                            }}
+                            onClick={handleCheckboxChangeUni2}
                         />
                         <span className={`flex items-center space-x-[6px] rounded px-[14px] text-sm font-medium ${!isCheckedUni && !isCheckedManu ? 'bg-[#242424]' : 'hover:bg-[#292929]'} transition-all`}>
                             TIO
                         </span>
-                        <span className={` flex items-center space-x-[6px] rounded px-[14px] text-sm font-medium ${isCheckedUni && !isCheckedManu ? 'bg-[#242424]' : ' hover:bg-[#292929]'} transition-all`}>
+                    </label>
+                    <label className='mb-1 py-3 relative inline-flex cursor-default select-none items-center justify-center bg-[#343434] p-[3px] pl-0'>
+                        <input
+                            type='button' 
+                            className='sr-only'
+                            onClick={handleCheckboxChangeUni2}
+                        />
+                        <span className={`flex items-center space-x-[6px] rounded px-[14px] text-sm font-medium ${isCheckedUni && !isCheckedManu ? 'bg-[#242424]' : 'hover:bg-[#292929]'} transition-all`}>
                             SYGO
                         </span>
-                </label>
-                <div className='text-[#ffffffde] flex'>
+                    </label>
                     <label className='mb-1 py-3 relative inline-flex cursor-default select-none items-center justify-center rounded-r-md bg-[#343434] p-[3px] pl-0 '>
                         <input 
                             className='sr-only'  
@@ -738,7 +753,7 @@ function Tabela() {
                         Concluídas
                     </span>
                 </label>
-                <div className='m-auto ml-[700px] block'>
+                <div className='m-auto  block'>
                     <ReactPaginate 
                         className='flex flex-row bg-[#343434] rounded-md' 
                         pageCount={totalPages} 
@@ -754,9 +769,10 @@ function Tabela() {
                         pageClassName='mx-1 hover:bg-[#292929] transition-all rounded'
                         activeClassName='bg-[#242424]'
                         breakLabel="..."
-                        pageRangeDisplayed={20}
+                        pageRangeDisplayed={5}
                     />
                 </div>
+                <div className='p-9 py-0'></div>
                 <FaQuestion className='mb-1 mr-2 mt-1 float-right cursor-help' title='Bugs ou sugestões favor informar no bitrix Luiz Eduardo Krol.' />
                 <button className='mr-1 mb-1 float-right text-sm font-medium cursor-default select-none px-[10px] p-[3px] bg-[#343434] hover:bg-[#1b1b1b] transition-all rounded-md' onClick={handleLogout}>Logout</button>
                 <Link className='mr-1 mb-1 float-right text-sm font-medium cursor-default select-none px-[10px] p-[3px] bg-[#343434] hover:bg-[#1b1b1b] transition-all rounded-md' to="/gerencia">Gerência</Link>
