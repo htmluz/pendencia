@@ -410,7 +410,7 @@ function Tabela() {
         return date
     }
 
-    function AvisoManuHeader() {
+    function AvisoManuHeaderURG() {
         const sap = pendenciasAbertas.filter(item => item.tipo === "Campanha de Manutenção").map(item => dataAviso(item.dateend));
         if (sap.some(item => item === true)) {
             return true;
@@ -419,6 +419,51 @@ function Tabela() {
         }
     }
 
+    function AvisoManuHeader() {
+        const sap = pendenciasAbertas.filter(item => item.tipo === "Campanha de Manutenção").map(item => dataAviso(item.dateatt));
+        if (sap.some(item => item === true)) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    function AvisoTIOurg() {
+        const sap = pendenciasAbertas.filter(item => item.tipo !== 'Campanha de Manutenção').map(item => dataAviso(item.dateend));
+        console.log(pendenciasAbertas)
+        if (sap.some(item => item === true)) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    function AvisoTIO() {
+        const sap = pendenciasAbertas.filter(item => item.tipo !== 'Campanha de Manutenção').map(item => dataAviso(item.dateatt));
+        if (sap.some(item => item === true)) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    function AvisoSYGO() {
+        const sap = pendenciasAbertasSYGO.map(item => dataAviso(item.dateatt));
+        if (sap.some(item => item === true)) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    function AvisoSYGOURG() {
+        const sap = pendenciasAbertasSYGO.map(item => dataAviso(item.dateend));
+        if (sap.some(item => item === true)) {
+            return true;
+        } else {
+            return false;
+        }
+    }
 
     const sorting = (col) => {
         if (!isChecked && !isCheckedUni) {
@@ -506,6 +551,8 @@ function Tabela() {
                         />
                         <span className={`flex items-center space-x-[6px] rounded px-[14px] text-sm font-medium ${!isCheckedUni && !isCheckedManu ? 'bg-[#242424]' : 'hover:bg-[#292929]'} transition-all`}>
                             TIO
+                            {AvisoTIO() ? <PiWarningFill className='ml-1 mr-0 text-yellow-500' /> : null}
+                            {AvisoTIOurg() ? <PiWarningOctagonFill className='ml-1 mr-0 text-red-500' /> : null}
                         </span>
                     </label>
                     <label className='mb-1 py-3 relative inline-flex cursor-default select-none items-center justify-center bg-[#343434] p-[3px] pl-0'>
@@ -516,6 +563,8 @@ function Tabela() {
                         />
                         <span className={`flex items-center space-x-[6px] rounded px-[14px] text-sm font-medium ${isCheckedUni && !isCheckedManu ? 'bg-[#242424]' : 'hover:bg-[#292929]'} transition-all`}>
                             SYGO
+                            {AvisoSYGO() ? <PiWarningFill className='ml-1 mr-0 text-yellow-500' /> : null}
+                            {AvisoSYGOURG() ? <PiWarningOctagonFill className='ml-1 mr-0 text-red-500' /> : null}
                         </span>
                     </label>
                     <label className='mb-1 py-3 relative inline-flex cursor-default select-none items-center justify-center rounded-r-md bg-[#343434] p-[3px] pl-0 '>
@@ -528,7 +577,8 @@ function Tabela() {
                         />
                         <span className={`flex items-center space-x-[6px] rounded pl-[14px] pr-[8px] text-sm font-medium ${isCheckedManu ? 'bg-[#242424]' : 'hover:bg-[#292929]'} transition-all`}>
                             Manutenções Programadas
-                            {AvisoManuHeader() ? <PiWarningOctagonFill className=' ml-1 text-red-500' /> : null}
+                            {AvisoManuHeader() ? <PiWarningFill className='ml-1 text-yellow-500' /> : null}
+                            {AvisoManuHeaderURG() ? <PiWarningOctagonFill className='ml-1 mr-0 text-red-500' /> : null}
                         </span>
                     </label>
                 </div>
