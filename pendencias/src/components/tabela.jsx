@@ -430,7 +430,6 @@ function Tabela() {
 
     function AvisoTIOurg() {
         const sap = pendenciasAbertas.filter(item => item.tipo !== 'Campanha de Manutenção').map(item => dataAviso(item.dateend));
-        console.log(pendenciasAbertas)
         if (sap.some(item => item === true)) {
             return true;
         } else {
@@ -641,7 +640,9 @@ function Tabela() {
                                 .filter(item => item.unidade === unidade)
                                 .map((item) => (
                                     <tr className='font-system text-sm hover:bg-[#12121266] transition-all cursor-default leading-6' key={item.id}>
-                                        <td data-id={item.id} onClick={clickDetalhePendencia} className='pl-1' >{item.titulo}</td>
+                                        <td data-id={item.id} onClick={clickDetalhePendencia} className='pl-1 flex justify-between' >{item.titulo}{item.massiva ? (
+                                            <div className='rounded-sm bg-yellow-500 h-4 my-auto font-semibold leading-3 px-1 mr-1 text-black'>Aviso Massiva</div>
+                                        ) : null}</td>
                                         <td data-id={item.id} onClick={clickDetalhePendencia}>{item.tipo}</td>
                                         <td data-id={item.id} onClick={clickDetalhePendencia}>{item.responsavel}</td>
                                         <td data-id={item.id} onClick={clickDetalhePendencia}>{formataData(item.dateinit)}</td>

@@ -18,7 +18,8 @@ function ModalEditPendencia( { fecharModal, penden }) {
             },
         fechamento: {
                 user: penden.fechamento.user
-            }
+            },
+        massiva: penden.massiva 
     });
     const [tipos, setTipos] = useState();
     const axiosPrivate = useAxiosPrivate();
@@ -63,8 +64,9 @@ function ModalEditPendencia( { fecharModal, penden }) {
 
 
     const handleInputChange = (e) => {
-        const { name, value } = e.target;
-        setFormData({ ...formData, [name]: value });
+        const { name, value, type, checked } = e.target;
+        const newValue = type === 'checkbox' ? checked : value 
+        setFormData({ ...formData, [name]: newValue });
     };
 
     return (
@@ -123,7 +125,7 @@ function ModalEditPendencia( { fecharModal, penden }) {
                                         </div>
                                         
                                     </div>
-                                    <div className='flex flex-row py-2 border-b-2 border-[#efefef] pb-7'>
+                                    <div className='flex flex-row py-2'>
                                         <div className='w-30p mr-auto'>
                                             <label htmlFor="dateinit">
                                                 Data/hora de Início:
@@ -143,6 +145,22 @@ function ModalEditPendencia( { fecharModal, penden }) {
                                             </label>
                                             
                                         </div>
+                                    </div>
+                                    <div className='flex w-90% py-2 border-b-2 border-[#efefef] pb-3'>
+                                        <input value={formData.massiva} onChange={handleInputChange} type='checkbox' checked={formData.massiva} className='peer mt-1 mr-2 w-4 h-4 rounded focus:ring-0 bg-[#efefef] checked:bg-[#dddddd] appearance-none transition-all' name='massiva' id='massiva' />
+                                        <label htmlFor="massiva" className='select-none'>Aviso Massivas?</label>
+                                        <svg
+                                            className="absolute w-4 h-4 mt-1 opacity-0 peer-checked:opacity-100 block pointer-events-none transition-opacity duration-200 ease-in-out"
+                                            xmlns="http://www.w3.org/2000/svg"
+                                            viewBox="0 0 24 24"
+                                            fill="none"
+                                            stroke="currentColor"
+                                            strokeWidth="4"
+                                            strokeLinecap="round"
+                                            strokeLinejoin="round"
+                                        >
+                                            <polyline points="20 6 9 17 4 12"></polyline>
+                                        </svg>
                                     </div>
                                     <div className='flex mt-6'>
                                         <button type="button" onClick={fecharModal} className='transition-colors mr-auto bg-[#efefef] hover:bg-[#dddddd] rounded px-3 py-2 w-48p'>Fechar</button>
