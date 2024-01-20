@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { AiOutlineClose } from "react-icons/ai";
 import useAxiosPrivate from '../Hooks/useAxiosPrivate';
+import moment from 'moment-timezone';
 
 function ModalEditPendencia( { fecharModal, penden }) {
     const [formData, setFormData] = useState({
@@ -23,6 +24,7 @@ function ModalEditPendencia( { fecharModal, penden }) {
     });
     const [tipos, setTipos] = useState();
     const axiosPrivate = useAxiosPrivate();
+    const agr = Date.now()  
 
 
     useEffect(() => {
@@ -68,6 +70,13 @@ function ModalEditPendencia( { fecharModal, penden }) {
         const newValue = type === 'checkbox' ? checked : value 
         setFormData({ ...formData, [name]: newValue });
     };
+
+    function formataData(date) {
+        date = moment(date);
+        date.add(6, 'hours');
+        date.tz('America/Sao_Paulo');
+        return date.format('YYYY-MM-DDTHH:mm')
+    } 
 
     return (
             <div className='fixed bg-[#00000080] top-0 left-0 w-full h-full z-1000'>
@@ -135,7 +144,7 @@ function ModalEditPendencia( { fecharModal, penden }) {
                                         <div className='w-30p mr-auto'>
                                             <label htmlFor="dateatt">
                                                 Atualizar em:
-                                                <input required value={formData.dateatt} onChange={handleInputChange} id="dateatt" name="dateatt" type="datetime-local" min="2023-01-01T00:00" max="2666-01-01T00:00" className='font-normal px-2 transition-colors focus:outline-none focus:bg-[#dddddd] leading-9 bg-[#efefef] rounded w-full' />
+                                                <input required value={formData.dateatt} onChange={handleInputChange} id="dateatt" name="dateatt" type="datetime-local" min="2023-01-01T00:00" max={formData.tipo === "Rompimento Backbone" ? formataData(agr) : "2666-01-01T00:00"} className='font-normal px-2 transition-colors focus:outline-none focus:bg-[#dddddd] leading-9 bg-[#efefef] rounded w-full' />
                                             </label>
                                         </div>
                                         <div className='w-30p'>
