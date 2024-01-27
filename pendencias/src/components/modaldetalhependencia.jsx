@@ -101,24 +101,24 @@ function ModalDetalhePendencia({ fecharModal, penden }) {
           <div className="flex flex-col p-5 pt-5 pb-3">
             <h1 className="font-Inter font-bold mb-2 ">Andamentos: </h1>
             {penden.andamento.map((andamento) => (
-              <div className=" border-t-2 border-[#efefef] mb-2 cursor-default">
-                <div>
-                  <p className="font-system font-bold italic mt-1">
-                    {andamento.user}
-                  </p>
+              <div>
+                <div className=" border-t-2 border-[#efefef] cursor-default">
+                  <div className="flex">
+                    <p className="font-system font-bold italic mt-1">
+                      {andamento.user}
+                    </p>
+                    <p className="text-[11px] font-Inter italic select-none mt-3 ml-3">
+                      {formataData(andamento.dateandamento)}
+                    </p>
+                  </div>
                 </div>
                 <div>
                   <p
-                    className="font-system leading-5"
+                    className="font-system leading-5 mb-2"
                     dangerouslySetInnerHTML={{
                       __html: formataBR(andamento.andamento),
                     }}
                   ></p>
-                </div>
-                <div>
-                  <p className=" text-xs font-Inter italic select-none">
-                    {formataData(andamento.dateandamento)}
-                  </p>
                 </div>
               </div>
             ))}

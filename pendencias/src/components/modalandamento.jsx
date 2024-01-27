@@ -2,13 +2,14 @@ import { useState } from "react";
 import useAxiosPrivate from "../Hooks/useAxiosPrivate";
 import { AiOutlineClose } from "react-icons/ai";
 import moment from "moment-timezone";
-import { FaPaperclip } from "react-icons/fa6";
 
 function ModalAndamento({ closeModal, id, penden }) {
+  const [arquivos, setArquivos] = useState([]);
   const [formData, setFormData] = useState({
     andamento: {
       user: "",
       andamento: "",
+      file: null,
     },
   });
   const axiosPrivate = useAxiosPrivate();
@@ -18,9 +19,14 @@ function ModalAndamento({ closeModal, id, penden }) {
     setFormData({ ...formData, andamento: { [name]: value } });
   };
 
+  const handleFileChange = (e) => {
+    setFormData({ ...formData, file: e.target.files[0] });
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     formData.andamento.user = window.localStorage.getItem("USER");
+
     try {
       const response = await axiosPrivate.put(
         `/pendencias/andamento/${id}`,
@@ -64,9 +70,12 @@ function ModalAndamento({ closeModal, id, penden }) {
           <div>
             {penden.andamento.map((andamento) => (
               <div className=" border-t-2 border-[#efefef] mb-2 cursor-default">
-                <div>
+                <div className="flex">
                   <p className="font-system font-bold italic mt-1">
                     {andamento.user}
+                  </p>
+                  <p className="text-[11px] font-Inter italic select-none mt-3 ml-3">
+                    {formataData(andamento.dateandamento)}
                   </p>
                 </div>
                 <div>
@@ -76,11 +85,6 @@ function ModalAndamento({ closeModal, id, penden }) {
                       __html: formataBR(andamento.andamento),
                     }}
                   ></p>
-                </div>
-                <div>
-                  <p className=" text-xs font-Inter italic select-none">
-                    {formataData(andamento.dateandamento)}
-                  </p>
                 </div>
               </div>
             ))}
@@ -94,7 +98,7 @@ function ModalAndamento({ closeModal, id, penden }) {
               <h5 className="font-Inter font-bold text-lg select-none cursor-default mt-1">
                 Novo Andamento
               </h5>
-              <div className="pb-1">
+              <div className="pb-1 font-system select-none">
                 <textarea
                   required
                   id="andamento"
@@ -104,10 +108,14 @@ function ModalAndamento({ closeModal, id, penden }) {
                   type="text"
                   className="font-normal p-2 mt-2 transition-colors focus:outline-none focus:bg-[#dddddd] leading-6 bg-[#efefef] rounded w-full "
                 />
-              </div>
-              <div className="flex font-system select-none cursor-not-allowed">
-                <FaPaperclip className="mt-1 mr-1" />
-                <p>Anexar Arquivo</p>
+                <input
+                  title="logo nois faz"
+                  type="file"
+                  onChange={handleFileChange}
+                  multiple
+                  disabled
+                  className=" cursor-not-allowed block w-full text-sm file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-[#f2f9fd] file:text-[#187bcd] hover:file:bg-[#e7f4fc]"
+                />
               </div>
               <div className="mt-3">
                 <button
