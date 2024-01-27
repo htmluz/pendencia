@@ -263,10 +263,13 @@ function Tabela() {
 
   const handleSearch = (event) => {
     const query = event.target.value.toLowerCase();
-    console.log(query);
     if (!isChecked && !isCheckedUni) {
       if (query === "") {
-        setPendenciasabertaspag(pendenciasAbertas.slice(startIndex, endIndex));
+        setPendenciasabertaspag(
+          pendenciasAbertas
+            .filter((item) => item.tipo !== "Campanha de Manutenção")
+            .slice(startIndex, endIndex)
+        );
         setCurrentPage(0);
       } else {
         setPendenciasabertaspag(
@@ -319,7 +322,9 @@ function Tabela() {
     } else if (isChecked && !isCheckedUni) {
       if (query === "") {
         setPendenciasfinalizadaspag(
-          pendenciasFinalizadas.slice(startIndex, endIndex)
+          pendenciasFinalizadas
+            .filter((item) => item.tipo !== "Campanha de Manutenção")
+            .slice(startIndex, endIndex)
         );
         setCurrentPage(0);
       } else {
@@ -499,7 +504,19 @@ function Tabela() {
   function clickAndamentoPendencia(event) {
     setModalAndam((current) => !current);
     if (modalAndam) {
-      setarId(event.currentTarget.dataset.id);
+      const id1 = event.currentTarget.dataset.id;
+      setarId(id1);
+      if (!isCheckedUni) {
+        let pendenciabyId = pendenciasAbertas.find(
+          (pendencia) => pendencia.id == id1
+        );
+        setPendenciaEdit(pendenciabyId);
+      } else {
+        let pendenciabyId = pendenciasAbertasSYGO.find(
+          (pendencia) => pendencia.id == id1
+        );
+        setPendenciaEdit(pendenciabyId);
+      }
     } else {
       if (!isCheckedUni) {
         loadPendencia();
@@ -920,14 +937,25 @@ function Tabela() {
                     </td>
                     <td>
                       {item.taskid ? (
-                        <div
-                          onClick={() => {
-                            navigator.clipboard.writeText(item.taskid);
-                          }}
-                          className="flex hover:text-[#aaaaaa]"
-                        >
-                          <BsClipboard className="mt-1 mr-1" />
-                          {item.taskid}
+                        <div className="flex">
+                          <div
+                            onClick={() => {
+                              navigator.clipboard.writeText(item.taskid);
+                            }}
+                            className="flex hover:text-[#aaaaaa]"
+                          >
+                            <BsClipboard className="mt-1 mr-1" />
+                          </div>
+                          <a
+                            className="underline hover:text-[#aaaaaa]"
+                            href={
+                              "http://engenharia.redeunifique.com.br/umov/gerencia_tarefa/?id_atividade=" +
+                              item.taskid
+                            }
+                            target="_blank"
+                          >
+                            {item.taskid}
+                          </a>
                         </div>
                       ) : null}
                     </td>
@@ -1044,9 +1072,14 @@ function Tabela() {
                       <td
                         data-id={item.id}
                         onClick={clickDetalhePendencia}
-                        className=""
+                        className="flex justify-between"
                       >
                         {item.titulo}
+                        {item.massiva ? (
+                          <div className="rounded-sm bg-yellow-500 h-4 my-auto font-semibold leading-3 px-1 mr-1 text-black">
+                            Aviso Massiva
+                          </div>
+                        ) : null}
                       </td>
                       <td data-id={item.id} onClick={clickDetalhePendencia}>
                         {item.tipo}
@@ -1115,9 +1148,14 @@ function Tabela() {
                       <td
                         data-id={item.id}
                         onClick={clickDetalhePendencia}
-                        className="pl-1"
+                        className="flex justify-between"
                       >
                         {item.titulo}
+                        {item.massiva ? (
+                          <div className="rounded-sm bg-yellow-500 h-4 my-auto font-semibold leading-3 px-1 mr-1 text-black">
+                            Aviso Massiva
+                          </div>
+                        ) : null}
                       </td>
                       <td data-id={item.id} onClick={clickDetalhePendencia}>
                         {item.tipo}
@@ -1235,7 +1273,7 @@ function Tabela() {
         <div className="p-9 py-0"></div>
         <FaQuestion
           className="mb-1 mr-2 mt-1 float-right cursor-help"
-          title="Bugs ou sugestões favor informar no bitrix Luiz Eduardo Krol."
+          title="Bugs ou sugestões mattermost @kroluiz"
         />
         <button
           className="mr-1 mb-1 float-right text-sm font-medium cursor-default select-none px-[10px] p-[3px] bg-[#343434] hover:bg-[#1b1b1b] transition-all rounded-md"
@@ -1271,7 +1309,11 @@ function Tabela() {
           />
         ) : null}
         {!modalAndam ? (
-          <ModalAndamento closeModal={clickAndamentoPendencia} id={idOut} />
+          <ModalAndamento
+            penden={pendenciaEdit}
+            closeModal={clickAndamentoPendencia}
+            id={idOut}
+          />
         ) : null}
         {!modalDetalhe ? (
           <ModalDetalhePendencia

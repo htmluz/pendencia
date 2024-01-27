@@ -14,9 +14,13 @@ function ModalDetalhePendencia({ fecharModal, penden }) {
     return url;
   }
 
+  function formataBR(andam) {
+    return andam.replace(/\n/g, "<br/>");
+  }
+
   return (
     <div className="fixed bg-[#00000080] top-0 left-0 w-full h-full z-1000">
-      <div className="bg-white w-3/4 mt-20 ml-auto mr-auto rounded p-4 pb-6 shadow-modal">
+      <div className="bg-white w-3/4 mt-20 ml-auto mr-auto rounded p-4 pb-6 shadow-modal max-h-[794px] overflow-auto">
         <div className="relative flex flex-col w-full pointer-events-auto p-5 pb-1">
           <div className="font-Inter font-bold text-lg flex justify-between align-top text-right border-b-2 pb-3 border-[#efefef]">
             <h5>Detalhes da Pendência</h5>
@@ -96,34 +100,28 @@ function ModalDetalhePendencia({ fecharModal, penden }) {
         {penden.andamento.length > 0 ? (
           <div className="flex flex-col p-5 pt-5 pb-3">
             <h1 className="font-Inter font-bold mb-2 ">Andamentos: </h1>
-            <div>
-              <table className="w-full">
-                <thead>
-                  <tr className="detalhe border-[#efefef] border-b-2">
-                    <th className="text-sm text-left font-Inter font-bold">
-                      Hora
-                    </th>
-                    <th className="text-sm font-Inter font-bold">Usuário</th>
-                    <th className="text-sm font-Inter font-bold">Andamentos</th>
-                  </tr>
-                </thead>
-                <tbody className=" ">
-                  {penden.andamento.map((andamento) => (
-                    <tr className="detalhe align-top">
-                      <th className="text-sm text-left font-Inter font-normal min-w-[115px]">
-                        {formataData(andamento.dateandamento)}
-                      </th>
-                      <th className="text-sm text-left font-Inter font-normal pl-2">
-                        {andamento.user}
-                      </th>
-                      <th className="text-sm min-w-[60%] text-left font-Inter font-normal pl-3">
-                        {andamento.andamento}
-                      </th>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
+            {penden.andamento.map((andamento) => (
+              <div className=" border-t-2 border-[#efefef] mb-2 cursor-default">
+                <div>
+                  <p className="font-system font-bold italic mt-1">
+                    {andamento.user}
+                  </p>
+                </div>
+                <div>
+                  <p
+                    className="font-system leading-5"
+                    dangerouslySetInnerHTML={{
+                      __html: formataBR(andamento.andamento),
+                    }}
+                  ></p>
+                </div>
+                <div>
+                  <p className=" text-xs font-Inter italic select-none">
+                    {formataData(andamento.dateandamento)}
+                  </p>
+                </div>
+              </div>
+            ))}
           </div>
         ) : null}
       </div>
