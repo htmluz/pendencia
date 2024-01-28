@@ -4,7 +4,6 @@ import { AiOutlineClose } from "react-icons/ai";
 import moment from "moment-timezone";
 
 function ModalAndamento({ closeModal, id, penden }) {
-  const [arquivos, setArquivos] = useState([]);
   const [formData, setFormData] = useState({
     andamento: {
       user: "",
