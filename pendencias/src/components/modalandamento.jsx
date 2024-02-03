@@ -1,38 +1,76 @@
-import { useState } from "react";
+import React, { useState } from "react";
 import useAxiosPrivate from "../Hooks/useAxiosPrivate";
 import { AiOutlineClose } from "react-icons/ai";
 import moment from "moment-timezone";
 
 function ModalAndamento({ closeModal, id, penden }) {
   const [formData, setFormData] = useState({
-    andamento: {
-      user: "",
-      andamento: "",
-      file: null,
-    },
+    user: "",
+    andamento: "",
+    files: [],
   });
   const axiosPrivate = useAxiosPrivate();
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setFormData({ ...formData, andamento: { [name]: value } });
+    setFormData({ ...formData, [name]: value });
   };
 
   const handleFileChange = (e) => {
-    setFormData({ ...formData, file: e.target.files[0] });
+    const filesArray = Array.from(e.target.files);
+    setFormData({ ...formData, files: [...formData.files, ...filesArray] });
+  };
+
+  const renderFiles = (paths) => {
+    return (
+      <div className="flex ">
+        {paths.map((files, index) => (
+          <React.Fragment key={index}>
+            {isImage(files) ? (
+              <img
+                src={`http://localhost:3001/pendencias/imgs/${getFileName(
+                  files
+                )}`}
+                className="object-contain mx-auto w-[500px] h-[100px]"
+              />
+            ) : (
+              <a>Arquivos</a>
+            )}
+          </React.Fragment>
+        ))}
+      </div>
+    );
+  };
+
+  const getFileName = (path) => {
+    const fileName = path.split("\\").pop();
+    const lower = fileName.toLowerCase();
+    return lower;
+  };
+
+  const isImage = (path) => {
+    const imgext = [".jpg", ".jpeg", ".png", ".gif", ".bmp"];
+    const lowerpath = path.toLowerCase();
+    return imgext.some((ext) => lowerpath.endsWith(ext));
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    formData.andamento.user = window.localStorage.getItem("USER");
+    formData.user = window.localStorage.getItem("USER");
 
+    const form = new FormData();
+    form.append("user", formData.user);
+    form.append("andamento", formData.andamento);
+    for (let i = 0; i < formData.files.length; i++) {
+      form.append("files", formData.files[i]);
+    }
     try {
       const response = await axiosPrivate.put(
         `/pendencias/andamento/${id}`,
-        formData,
+        form,
         {
           headers: {
-            "Content-Type": "application/json",
+            "Content-Type": "multipart/form-data",
           },
         }
       );
@@ -85,6 +123,9 @@ function ModalAndamento({ closeModal, id, penden }) {
                     }}
                   ></p>
                 </div>
+                {andamento.paths.length > 0
+                  ? renderFiles(andamento.paths)
+                  : null}
               </div>
             ))}
           </div>
@@ -93,6 +134,7 @@ function ModalAndamento({ closeModal, id, penden }) {
               method="PUT"
               onSubmit={handleSubmit}
               className="font-system font-semibold"
+              encType="multipart/form-data"
             >
               <h5 className="font-Inter font-bold text-lg select-none cursor-default mt-1">
                 Novo Andamento
@@ -108,12 +150,11 @@ function ModalAndamento({ closeModal, id, penden }) {
                   className="font-normal p-2 mt-2 transition-colors focus:outline-none focus:bg-[#dddddd] leading-6 bg-[#efefef] rounded w-full "
                 />
                 <input
-                  title="logo nois faz"
+                  title="Até 10 arquivos"
                   type="file"
                   onChange={handleFileChange}
                   multiple
-                  disabled
-                  className=" cursor-not-allowed block w-full text-sm file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-[#f2f9fd] file:text-[#187bcd] hover:file:bg-[#e7f4fc]"
+                  className="block w-full text-sm file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-[#f2f9fd] file:text-[#187bcd] hover:file:bg-[#e7f4fc]"
                 />
               </div>
               <div className="mt-3">
