@@ -12,7 +12,6 @@ import ModalNovaPendencia from "./modalnovapendencia";
 import ModalFecharPendencia from "./modalFecharPendencia";
 import ModalEditPendencia from "./modaleditpendencia";
 import ModalDetalhePendencia from "./modaldetalhependencia";
-import TableAndamentos from "./tableandamentos";
 import useAxiosPrivate from "../Hooks/useAxiosPrivate";
 import moment from "moment-timezone";
 import axios from "../api/axios";
@@ -25,7 +24,6 @@ function Tabela() {
   const [idOut, setIdOut] = useState(null);
   const [unidade, setUnidade] = useState("TIO");
   const [loading, setLoading] = useState(false);
-  const [position, setPosition] = useState({ top: 0, right: 0 });
   const [modalNova, setModalNova] = useState(false);
   const [isChecked, setIsChecked] = useState(false);
   const [pendencias, setPendencias] = useState([]);
@@ -39,7 +37,6 @@ function Tabela() {
   const [pendenciaEdit, setPendenciaEdit] = useState(null);
   const [isCheckedManu, setIsCheckedManu] = useState(false);
   const [pendenciaFechar, setPendenciaFechar] = useState(null);
-  const [isElementVisible, setElementVisible] = useState(false);
   const [pendenciaDetalhe, setPendenciaDetalhe] = useState(null);
   const [pendenciasAbertas, setPendenciasAbertas] = useState([]);
   const [pendenciasAbertasSYGO, setPendenciasAbertasSYGO] = useState([]);
@@ -172,24 +169,6 @@ function Tabela() {
     } catch (err) {
       console.log(err);
     }
-  };
-
-  const handleMouseOver = (event) => {
-    //mostra a tabela de andamentos
-    const { clientX, clientY } = event;
-    setPosition({ top: clientY, right: clientX });
-    setElementVisible(true);
-    setarId(event.currentTarget.dataset.id);
-  };
-
-  const handleMouseOver2 = (event) => {
-    //deixa a tabela ativa com o mouse em cima da div, passado pro componente de tabela
-    setElementVisible(true);
-  };
-
-  const handleMouseOut = () => {
-    //remove a tabela de andamentos
-    setElementVisible(false);
   };
 
   useEffect(() => {
@@ -394,11 +373,18 @@ function Tabela() {
   };
 
   if (loading) {
-    //enquanto carrega a tabela de pendências mostra o texto
     return (
-      <p className="p-2 font-Inter text-[#ffffffde] font-bold">
-        Carregando pendências...
-      </p>
+      <div className="flex items-center justify-center h-screen">
+        <div className="p-2 font-Inter text-[#ffffffde] cursor-default select-none font-bold">
+          <p className="font-bold">Carregando pendências...</p>
+          <button
+            onClick={() => navigate("/login")}
+            className="mt-2 text-sm px-[10px] p-[3px] bg-[#343434] hover:bg-[#1b1b1b] transition-all rounded-md"
+          >
+            Voltar para o Login
+          </button>
+        </div>
+      </div>
     );
   }
 
@@ -893,8 +879,15 @@ function Tabela() {
                     className="font-system text-sm hover:bg-[#12121266] transition-all cursor-default leading-6"
                     key={item.id}
                   >
-                    <td data-id={item.id} className="font-bold">
-                      {item.id}
+                    <td data-id={item.id}>
+                      <div
+                        onClick={() => {
+                          navigator.clipboard.writeText(item.id);
+                        }}
+                        className="font-bold hover:text-[#aaaaaa] transition-all select-none"
+                      >
+                        {item.id}
+                      </div>
                     </td>
                     <td
                       data-id={item.id}
@@ -973,10 +966,6 @@ function Tabela() {
                     <td className="pr-0">
                       <div className="flex flex-row pr-0">
                         <a
-                          onMouseOver={
-                            item.andamento.length > 0 ? handleMouseOver : null
-                          }
-                          onMouseLeave={handleMouseOut}
                           data-id={item.id}
                           onClick={clickAndamentoPendencia}
                           className={`cursor-default ${
@@ -1066,8 +1055,15 @@ function Tabela() {
                       className="font-system text-sm hover:bg-[#12121266] transition-all cursor-default leading-6"
                       key={item.id}
                     >
-                      <td data-id={item.id} className="font-bold">
-                        {item.id}
+                      <td data-id={item.id}>
+                        <div
+                          onClick={() => {
+                            navigator.clipboard.writeText(item.id);
+                          }}
+                          className="font-bold hover:text-[#aaaaaa] transition-all select-none"
+                        >
+                          {item.id}
+                        </div>
                       </td>
                       <td
                         data-id={item.id}
@@ -1120,10 +1116,6 @@ function Tabela() {
                       <td className="pr-0">
                         <div className="flex flex-row pr-0">
                           <a
-                            onMouseOver={
-                              item.andamento.length > 0 ? handleMouseOver : null
-                            }
-                            onMouseLeave={handleMouseOut}
                             data-id={item.id}
                             className={`cursor-default ${
                               item.andamento.length > 0
@@ -1142,8 +1134,15 @@ function Tabela() {
                       className="font-system text-sm hover:bg-[#12121266] transition-all cursor-default leading-6"
                       key={item.id}
                     >
-                      <td data-id={item.id} className="font-bold">
-                        {item.id}
+                      <td data-id={item.id}>
+                        <div
+                          onClick={() => {
+                            navigator.clipboard.writeText(item.id);
+                          }}
+                          className="font-bold hover:text-[#aaaaaa] transition-all select-none"
+                        >
+                          {item.id}
+                        </div>
                       </td>
                       <td
                         data-id={item.id}
@@ -1196,10 +1195,6 @@ function Tabela() {
                       <td className="pr-0">
                         <div className="flex flex-row pr-0">
                           <a
-                            onMouseOver={
-                              item.andamento.length > 0 ? handleMouseOver : null
-                            }
-                            onMouseLeave={handleMouseOut}
                             data-id={item.id}
                             className={`cursor-default ${
                               item.andamento.length > 0
@@ -1217,17 +1212,6 @@ function Tabela() {
           </table>
         )}
       </div>
-      {isElementVisible ? (
-        <TableAndamentos
-          handleMouseOver={handleMouseOver2}
-          handleMouseOut={handleMouseOut}
-          top={position.top}
-          id={idOut}
-          pendencias={
-            isChecked ? pendenciasfinalizadaspag : pendenciasabertaspag
-          }
-        />
-      ) : null}
       <footer className="text-[#ffffffde] flex justify-between font-system bg-gradient-to-t from-[#212121] fixed w-full bottom-0 pb-0">
         <label className="mb-1 ml-1 relative inline-flex cursor-default select-none items-center justify-center rounded-md bg-[#343434] p-[3px] ">
           <input

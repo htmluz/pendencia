@@ -47,6 +47,19 @@ function ModalNovaPendencia({ fecharModal, Unidade }) {
     };
   }, []);
 
+  useEffect(() => {
+    const keypress = (e) => {
+      if (e.key === "Escape") {
+        fecharModal();
+      }
+    };
+
+    window.addEventListener("keydown", keypress);
+    return () => {
+      window.removeEventListener("keydown", keypress);
+    };
+  }, [fecharModal]);
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     formData.abertura.user = window.localStorage.getItem("USER");

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { AiOutlineClose } from "react-icons/ai";
 import moment from "moment-timezone";
 
@@ -8,6 +8,19 @@ function ModalDetalhePendencia({ fecharModal, penden }) {
     date.tz("America/Sao_Paulo");
     return date.format("YYYY/MM/DD HH:mm");
   }
+
+  useEffect(() => {
+    const keypress = (e) => {
+      if (e.key === "Escape") {
+        fecharModal();
+      }
+    };
+
+    window.addEventListener("keydown", keypress);
+    return () => {
+      window.removeEventListener("keydown", keypress);
+    };
+  }, [fecharModal]);
 
   function incidente(url) {
     url = url.match(/(\d+)/g);
@@ -114,9 +127,12 @@ function ModalDetalhePendencia({ fecharModal, penden }) {
                 </div>
                 <div>
                   <p
-                    className="font-system leading-5 mb-2"
+                    className="font-system leading-5 break-all mb-2"
                     dangerouslySetInnerHTML={{
-                      __html: formataBR(andamento.andamento),
+                      __html: formataBR(andamento.andamento).replace(
+                        /((http|https):\/\/[^\s]+)/g,
+                        '<a class="underline text-[#187bcd]" href="$1" target="_blank">$1</a>'
+                      ),
                     }}
                   ></p>
                 </div>

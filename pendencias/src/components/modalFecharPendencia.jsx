@@ -1,5 +1,5 @@
 import { AiOutlineClose } from "react-icons/ai";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import useAxiosPrivate from "../Hooks/useAxiosPrivate";
 // import { axiosBitrix } from "../api/bitrix";
 import moment from "moment-timezone";
@@ -13,15 +13,18 @@ function ModalFecharPendencia({ closeModal, id, idtask }) {
   });
   const axiosPrivate = useAxiosPrivate();
 
-  // const BitrixCall = (taskid) => {
-  // if (taskid) {
-  // try {
-  // const response = axiosBitrix.get(`/tasks.task.complete.json?taskId=${taskid}`)
-  // } catch (err) {
-  // console.log(err);
-  // }
-  // }
-  // }
+  useEffect(() => {
+    const keypress = (e) => {
+      if (e.key === "Escape") {
+        closeModal();
+      }
+    };
+
+    window.addEventListener("keydown", keypress);
+    return () => {
+      window.removeEventListener("keydown", keypress);
+    };
+  }, [closeModal]);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;

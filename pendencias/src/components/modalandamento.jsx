@@ -1,76 +1,46 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import useAxiosPrivate from "../Hooks/useAxiosPrivate";
 import { AiOutlineClose } from "react-icons/ai";
 import moment from "moment-timezone";
 
 function ModalAndamento({ closeModal, id, penden }) {
   const [formData, setFormData] = useState({
-    user: "",
-    andamento: "",
-    files: [],
+    //ajustar no backend para voltar ao padrão que está em produção
+    andamento: {
+      user: "",
+      andamento: "",
+    },
   });
   const axiosPrivate = useAxiosPrivate();
 
+  useEffect(() => {
+    const keypress = (e) => {
+      if (e.key === "Escape") {
+        closeModal();
+      }
+    };
+
+    window.addEventListener("keydown", keypress);
+    return () => {
+      window.removeEventListener("keydown", keypress);
+    };
+  }, [closeModal]);
+
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setFormData({ ...formData, [name]: value });
-  };
-
-  const handleFileChange = (e) => {
-    const filesArray = Array.from(e.target.files);
-    setFormData({ ...formData, files: [...formData.files, ...filesArray] });
-  };
-
-  const renderFiles = (paths) => {
-    return (
-      <div className="flex ">
-        {paths.map((files, index) => (
-          <React.Fragment key={index}>
-            {isImage(files) ? (
-              <img
-                src={`http://localhost:3001/pendencias/imgs/${getFileName(
-                  files
-                )}`}
-                className="object-contain mx-auto w-[500px] h-[100px]"
-              />
-            ) : (
-              <a>Arquivos</a>
-            )}
-          </React.Fragment>
-        ))}
-      </div>
-    );
-  };
-
-  const getFileName = (path) => {
-    const fileName = path.split("\\").pop();
-    const lower = fileName.toLowerCase();
-    return lower;
-  };
-
-  const isImage = (path) => {
-    const imgext = [".jpg", ".jpeg", ".png", ".gif", ".bmp"];
-    const lowerpath = path.toLowerCase();
-    return imgext.some((ext) => lowerpath.endsWith(ext));
+    setFormData({ ...formData, andamento: { [name]: value } });
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    formData.user = window.localStorage.getItem("USER");
-
-    const form = new FormData();
-    form.append("user", formData.user);
-    form.append("andamento", formData.andamento);
-    for (let i = 0; i < formData.files.length; i++) {
-      form.append("files", formData.files[i]);
-    }
+    formData.andamento.user = window.localStorage.getItem("USER");
     try {
       const response = await axiosPrivate.put(
         `/pendencias/andamento/${id}`,
-        form,
+        formData,
         {
           headers: {
-            "Content-Type": "multipart/form-data",
+            "Content-Type": "application/json",
           },
         }
       );
@@ -117,15 +87,15 @@ function ModalAndamento({ closeModal, id, penden }) {
                 </div>
                 <div>
                   <p
-                    className="font-system leading-5"
+                    className="font-system leading-5 break-all"
                     dangerouslySetInnerHTML={{
-                      __html: formataBR(andamento.andamento),
+                      __html: formataBR(andamento.andamento).replace(
+                        /((http|https):\/\/[^\s]+)/g,
+                        '<a class="underline text-[#187bcd]" href="$1" target="_blank">$1</a>'
+                      ),
                     }}
                   ></p>
                 </div>
-                {andamento.paths.length > 0
-                  ? renderFiles(andamento.paths)
-                  : null}
               </div>
             ))}
           </div>
@@ -148,13 +118,6 @@ function ModalAndamento({ closeModal, id, penden }) {
                   name="andamento"
                   type="text"
                   className="font-normal p-2 mt-2 transition-colors focus:outline-none focus:bg-[#dddddd] leading-6 bg-[#efefef] rounded w-full "
-                />
-                <input
-                  title="Até 10 arquivos"
-                  type="file"
-                  onChange={handleFileChange}
-                  multiple
-                  className="block w-full text-sm file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-[#f2f9fd] file:text-[#187bcd] hover:file:bg-[#e7f4fc]"
                 />
               </div>
               <div className="mt-3">

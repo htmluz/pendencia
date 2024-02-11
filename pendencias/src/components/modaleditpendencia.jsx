@@ -48,6 +48,19 @@ function ModalEditPendencia({ fecharModal, penden }) {
     };
   }, []);
 
+  useEffect(() => {
+    const keypress = (e) => {
+      if (e.key === "Escape") {
+        fecharModal();
+      }
+    };
+
+    window.addEventListener("keydown", keypress);
+    return () => {
+      window.removeEventListener("keydown", keypress);
+    };
+  }, [fecharModal]);
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
