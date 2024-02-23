@@ -726,7 +726,7 @@ function Tabela() {
                   : "hover:bg-[#292929]"
               } transition-all`}
             >
-              TIO
+              MON-SC
               {AvisoTIO() ? (
                 <PiWarningFill className="ml-1 mr-0 text-yellow-500" />
               ) : null}
@@ -748,7 +748,7 @@ function Tabela() {
                   : "hover:bg-[#292929]"
               } transition-all`}
             >
-              SYGO
+              MON-RS
               {AvisoSYGO() ? (
                 <PiWarningFill className="ml-1 mr-0 text-yellow-500" />
               ) : null}
