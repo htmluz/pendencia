@@ -405,7 +405,7 @@ function Tabela() {
   };
 
   const handleCheckboxChangeUni2 = (event) => {
-    let uni = event.currentTarget.nextSibling.textContent;
+    let uni = event.currentTarget.nextSibling.id;
     setUnidade(uni);
     setIsCheckedManu(false);
     if (uni === "TIO") {
@@ -720,6 +720,7 @@ function Tabela() {
               onClick={handleCheckboxChangeUni2}
             />
             <span
+              id="TIO"
               className={`flex items-center space-x-[6px] rounded px-[14px] text-sm font-medium ${
                 !isCheckedUni && !isCheckedManu
                   ? "bg-[#242424]"
@@ -742,6 +743,7 @@ function Tabela() {
               onClick={handleCheckboxChangeUni2}
             />
             <span
+              id="SYGO"
               className={`flex items-center space-x-[6px] rounded px-[14px] text-sm font-medium ${
                 isCheckedUni && !isCheckedManu
                   ? "bg-[#242424]"
