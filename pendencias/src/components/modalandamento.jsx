@@ -5,7 +5,6 @@ import moment from "moment-timezone";
 
 function ModalAndamento({ closeModal, id, penden }) {
   const [formData, setFormData] = useState({
-    //ajustar no backend para voltar ao padrão que está em produção
     andamento: {
       user: "",
       andamento: "",

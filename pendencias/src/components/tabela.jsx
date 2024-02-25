@@ -458,24 +458,24 @@ function Tabela() {
 
   function clickEditarPendencia(event) {
     if (modalEditar) {
-      const idedit = event.currentTarget.dataset.id; //seto o id primeiro numa variavel pra usar ele dentro do if ainda
-      setarId(idedit);
+      // const idedit = event.currentTarget.dataset.id; //seto o id primeiro numa variavel pra usar ele dentro do if ainda
+      // setarId(idedit);
       if (!isCheckedUni) {
-        let pendenciabyId = pendenciasAbertas.find(
-          (pendencia) => pendencia.id == idedit
-        ); //acho a pendencia pelo id
-        pendenciabyId.dateatt = formataDataEdit(pendenciabyId.dateatt); //formatando pra preencher o campo datetime-local, tá bugando a hora que edita ele edita na tabela tb
-        pendenciabyId.dateend = formataDataEdit(pendenciabyId.dateend);
-        pendenciabyId.dateinit = formataDataEdit(pendenciabyId.dateinit);
-        setPendenciaEdit(pendenciabyId); //passo a pendencia que encontrei com os values ja pra preencher o modal
+        // let pendenciabyId = pendenciasAbertas.find(
+        //   (pendencia) => pendencia.id == idedit
+        // ); //acho a pendencia pelo id
+        event.dateatt = formataDataEdit(event.dateatt); //formatando pra preencher o campo datetime-local, tá bugando a hora que edita ele edita na tabela tb
+        event.dateend = formataDataEdit(event.dateend);
+        event.dateinit = formataDataEdit(event.dateinit);
+        setPendenciaEdit(event); //passo a pendencia que encontrei com os values ja pra preencher o modal
       } else {
-        let pendenciabyId = pendenciasAbertasSYGO.find(
-          (pendencia) => pendencia.id == idedit
-        );
-        pendenciabyId.dateatt = formataDataEdit(pendenciabyId.dateatt);
-        pendenciabyId.dateend = formataDataEdit(pendenciabyId.dateend);
-        pendenciabyId.dateinit = formataDataEdit(pendenciabyId.dateinit);
-        setPendenciaEdit(pendenciabyId);
+        // let pendenciabyId = pendenciasAbertasSYGO.find(
+        //   (pendencia) => pendencia.id == idedit
+        // );
+        event.dateatt = formataDataEdit(event.dateatt);
+        event.dateend = formataDataEdit(event.dateend);
+        event.dateinit = formataDataEdit(event.dateinit);
+        setPendenciaEdit(event);
       }
     } else {
       if (!isCheckedUni) {
@@ -552,6 +552,10 @@ function Tabela() {
         );
         setPendenciaDetalhe(pendenciabyId);
       }
+    } else if (!modalDetalhe && !isChecked && !isCheckedUni) {
+      loadPendencia();
+    } else if (!modalDetalhe && !isChecked && isCheckedUni) {
+      loadPendenciaSYGO();
     }
     setModalDetalhe((current) => !current);
   };
@@ -965,35 +969,6 @@ function Tabela() {
                         </a>
                       ) : null}
                     </td>
-                    <td className="pr-0">
-                      <div className="flex flex-row pr-0">
-                        <a
-                          data-id={item.id}
-                          onClick={clickAndamentoPendencia}
-                          className={`cursor-default ${
-                            item.andamento.length > 0
-                              ? "hover:text-[#aaaaaa]"
-                              : "text-[#666666]"
-                          }`}
-                        >
-                          <BiCommentDetail />
-                        </a>
-                        <a
-                          data-id={item.id}
-                          onClick={clickEditarPendencia}
-                          className="cursor-default hover:text-[#aaaaaa] transition-all"
-                        >
-                          <BiEdit />{" "}
-                        </a>
-                        <a
-                          data-id={item.id}
-                          onClick={clickEncerrarPendencia}
-                          className="cursor-default hover:text-[#aaaaaa] transition-all"
-                        >
-                          <AiOutlineCheckSquare />
-                        </a>
-                      </div>
-                    </td>
                   </tr>
                 ))}
             </tbody>
@@ -1194,20 +1169,6 @@ function Tabela() {
                           </a>
                         ) : null}
                       </td>
-                      <td className="pr-0">
-                        <div className="flex flex-row pr-0">
-                          <a
-                            data-id={item.id}
-                            className={`cursor-default ${
-                              item.andamento.length > 0
-                                ? "hover:text-[#aaaaaa]"
-                                : "text-[#666666]"
-                            }`}
-                          >
-                            <BiCommentDetail />
-                          </a>
-                        </div>
-                      </td>
                     </tr>
                   ))}
             </tbody>
@@ -1305,6 +1266,8 @@ function Tabela() {
           <ModalDetalhePendencia
             fecharModal={clickDetalhePendencia}
             penden={pendenciaDetalhe}
+            closePend={clickEncerrarPendencia}
+            editPend={clickEditarPendencia}
           />
         ) : null}
       </div>

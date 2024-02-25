@@ -1,13 +1,16 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
+import useAxiosPrivate from "../Hooks/useAxiosPrivate";
 import { AiOutlineClose } from "react-icons/ai";
 import moment from "moment-timezone";
 
-function ModalDetalhePendencia({ fecharModal, penden }) {
-  function formataData(date) {
-    date = moment(date);
-    date.tz("America/Sao_Paulo");
-    return date.format("YYYY/MM/DD HH:mm");
-  }
+function ModalDetalhePendencia({ fecharModal, penden, closePend, editPend }) {
+  const [formData, setFormData] = useState({
+    andamento: {
+      user: "",
+      andamento: "",
+    },
+  });
+  const axiosPrivate = useAxiosPrivate();
 
   useEffect(() => {
     const keypress = (e) => {
@@ -21,6 +24,36 @@ function ModalDetalhePendencia({ fecharModal, penden }) {
       window.removeEventListener("keydown", keypress);
     };
   }, [fecharModal]);
+
+  function formataData(date) {
+    date = moment(date);
+    date.tz("America/Sao_Paulo");
+    return date.format("YYYY/MM/DD HH:mm");
+  }
+
+  function handleInputChange(e) {
+    const { name, value } = e.target;
+    setFormData({ ...formData, andamento: { [name]: value } });
+  }
+
+  async function handleSubmit(e) {
+    e.preventDefault();
+    formData.andamento.user = window.localStorage.getItem("USER");
+    try {
+      const response = await axiosPrivate.put(
+        `/pendencias/andamento/${penden.id}`,
+        formData,
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      fecharModal();
+    } catch (err) {
+      console.log(err);
+    }
+  }
 
   function incidente(url) {
     url = url.match(/(\d+)/g);
@@ -54,7 +87,7 @@ function ModalDetalhePendencia({ fecharModal, penden }) {
                 <b>Id: </b>
                 {penden.id}
               </p>
-              <p className="text-sm mb-0">
+              <p className="text-sm mb-0 break-words">
                 <b>Descrição:</b> {penden.desc ? penden.desc : `Sem descrição`}
               </p>
               <p className="text-sm mb-0">
@@ -109,9 +142,32 @@ function ModalDetalhePendencia({ fecharModal, penden }) {
               </p>
             </div>
           </div>
+          <div className="flex justify-between ">
+            <button
+              onClick={() => {
+                fecharModal();
+                closePend();
+              }}
+              className="font-Inter cursor-default transition-colors disabled:cursor-not-allowed disabled:bg-[#dddddd] rounded text-white px-3 py-2 w-48p bg-[#ff2c2c] hover:bg-[#de0a26] font-semibold mt-3"
+              disabled={penden.complete}
+            >
+              Encerrar Pendência
+            </button>
+            <button
+              data-id={penden.id}
+              onClick={() => {
+                fecharModal();
+                editPend(penden);
+              }}
+              className="font-Inter cursor-default transition-colors disabled:cursor-not-allowed disabled:bg-[#dddddd] rounded bg-[#187bcd] hover:bg-[#1167b1] text-white px-3 py-2 w-48p font-semibold mt-3"
+              disabled={penden.complete}
+            >
+              Editar Pendência
+            </button>
+          </div>
         </div>
         {penden.andamento.length > 0 ? (
-          <div className="flex flex-col p-5 pt-5 pb-3">
+          <div className="flex flex-col p-5 pt-5 pb-0">
             <h1 className="font-Inter font-bold mb-2 ">Andamentos: </h1>
             {penden.andamento.map((andamento) => (
               <div>
@@ -140,6 +196,37 @@ function ModalDetalhePendencia({ fecharModal, penden }) {
             ))}
           </div>
         ) : null}
+        <div className="p-5 pt-0">
+          <form
+            method="PUT"
+            onSubmit={handleSubmit}
+            className="font-system font-semibold"
+            encType="multipart/form-data"
+          >
+            <h5 className="font-Inter font-bold text-lg select-none cursor-default mt-1">
+              Novo Andamento
+            </h5>
+            <div className="pb-1 font-system select-none">
+              <textarea
+                required
+                id="andamento"
+                rows="4"
+                onChange={handleInputChange}
+                name="andamento"
+                type="text"
+                className="font-normal p-2 mt-2 transition-colors focus:outline-none focus:bg-[#dddddd] leading-6 bg-[#efefef] rounded w-full "
+              />
+            </div>
+            <div className="mt-3">
+              <button
+                type="submit"
+                className="cursor-default transition-colors  bg-[#187bcd] hover:bg-[#1167b1] rounded px-3 py-2 w-full text-white"
+              >
+                Enviar
+              </button>
+            </div>
+          </form>
+        </div>
       </div>
     </div>
   );

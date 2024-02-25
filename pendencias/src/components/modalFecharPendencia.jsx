@@ -1,10 +1,9 @@
 import { AiOutlineClose } from "react-icons/ai";
 import { useState, useEffect } from "react";
 import useAxiosPrivate from "../Hooks/useAxiosPrivate";
-// import { axiosBitrix } from "../api/bitrix";
 import moment from "moment-timezone";
 
-function ModalFecharPendencia({ closeModal, id, idtask }) {
+function ModalFecharPendencia({ closeModal, id }) {
   const [formData, setFormData] = useState({
     fechamento: {
       user: "",
