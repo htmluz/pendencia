@@ -66,9 +66,36 @@ function ModalDetalhePendencia({ fecharModal, penden, closePend, editPend }) {
 
   return (
     <div className="fixed bg-[#00000080] top-0 left-0 w-full h-full z-1000">
-      <div className="bg-white w-3/4 mt-20 ml-auto mr-auto rounded p-4 pb-6 shadow-modal max-h-[794px] overflow-auto">
+      <div
+        className="
+        w-3/4 
+        mt-20 
+        ml-auto 
+        mr-auto 
+        rounded 
+        p-4
+        pb-6 
+        shadow-modal 
+        max-h-[794px] 
+        overflow-auto
+        bg-white 
+      "
+      >
         <div className="relative flex flex-col w-full pointer-events-auto p-5 pb-1">
-          <div className="font-Inter font-bold text-lg flex justify-between align-top text-right border-b-2 pb-3 border-[#efefef]">
+          <div
+            className="
+            font-Inter 
+            font-bold 
+            text-lg 
+            flex 
+            justify-between 
+            align-top 
+            text-right 
+            border-b-2 
+            pb-3 
+            border-[#efefef]
+          "
+          >
             <h5>Detalhes da Pendência</h5>
             <button
               onClick={fecharModal}
@@ -148,7 +175,22 @@ function ModalDetalhePendencia({ fecharModal, penden, closePend, editPend }) {
                 fecharModal();
                 closePend();
               }}
-              className="font-Inter cursor-default transition-colors disabled:cursor-not-allowed disabled:bg-[#dddddd] rounded text-white px-3 py-2 w-48p bg-[#ff2c2c] hover:bg-[#de0a26] font-semibold mt-3"
+              className="
+                font-Inter 
+                cursor-default 
+                transition-colors 
+                disabled:cursor-not-allowed 
+                rounded 
+                mt-3
+                px-3 
+                py-2 
+                w-48p 
+                font-semibold 
+                bg-[#ff2c2c] 
+                hover:bg-[#de0a26] 
+                text-white 
+                disabled:bg-[#dddddd] 
+              "
               disabled={penden.complete}
             >
               Encerrar Pendência
@@ -159,7 +201,22 @@ function ModalDetalhePendencia({ fecharModal, penden, closePend, editPend }) {
                 fecharModal();
                 editPend(penden);
               }}
-              className="font-Inter cursor-default transition-colors disabled:cursor-not-allowed disabled:bg-[#dddddd] rounded bg-[#187bcd] hover:bg-[#1167b1] text-white px-3 py-2 w-48p font-semibold mt-3"
+              className="
+                font-Inter 
+                cursor-default 
+                transition-colors 
+                disabled:cursor-not-allowed 
+                rounded 
+                mt-3
+                px-3 
+                py-2 
+                w-48p 
+                font-semibold 
+                disabled:bg-[#dddddd]
+                bg-[#187bcd] 
+                hover:bg-[#1167b1]
+                text-white 
+              "
               disabled={penden.complete}
             >
               Editar Pendência
@@ -214,13 +271,34 @@ function ModalDetalhePendencia({ fecharModal, penden, closePend, editPend }) {
                 onChange={handleInputChange}
                 name="andamento"
                 type="text"
-                className="font-normal p-2 mt-2 transition-colors focus:outline-none focus:bg-[#dddddd] leading-6 bg-[#efefef] rounded w-full "
+                className="
+                  font-normal 
+                  p-2 
+                  mt-2 
+                  transition-colors 
+                  focus:outline-none 
+                  leading-6 
+                  rounded 
+                  w-full
+                  focus:bg-[#dddddd] 
+                  bg-[#efefef] 
+                "
               />
             </div>
             <div className="mt-3">
               <button
                 type="submit"
-                className="cursor-default transition-colors  bg-[#187bcd] hover:bg-[#1167b1] rounded px-3 py-2 w-full text-white"
+                className="
+                  cursor-default 
+                  transition-colors  
+                  rounded 
+                  px-3 
+                  py-2 
+                  w-full 
+                  bg-[#187bcd] 
+                  hover:bg-[#1167b1] 
+                  text-white
+                "
               >
                 Enviar
               </button>
