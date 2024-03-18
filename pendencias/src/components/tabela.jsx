@@ -2,11 +2,11 @@ import React from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
 import ReactPaginate from "react-paginate";
-import { BiCommentDetail, BiEdit } from "react-icons/bi";
-import { AiOutlineCheckSquare, AiOutlinePlus } from "react-icons/ai";
+import { BiCommentDetail } from "react-icons/bi";
+import { AiOutlinePlus } from "react-icons/ai";
 import { BsClipboard } from "react-icons/bs";
 import { PiWarningFill, PiWarningOctagonFill } from "react-icons/pi";
-import { FaSortDown, FaSortUp, FaQuestion, FaCheck } from "react-icons/fa";
+import { FaSortDown, FaSortUp, FaQuestion } from "react-icons/fa";
 import ModalAndamento from "./modalandamento";
 import ModalNovaPendencia from "./modalnovapendencia";
 import ModalFecharPendencia from "./modalFecharPendencia";
@@ -46,6 +46,8 @@ function Tabela() {
   );
   const [searchValue, setSearchValue] = useState("titulo");
 
+  const [time, setTime] = useState(Date.now());
+
   const [pendenciasabertaspag, setPendenciasabertaspag] = useState([]);
   const [pendenciasfinalizadaspag, setPendenciasfinalizadaspag] = useState([]);
   const itemsPerPage = 31;
@@ -58,6 +60,27 @@ function Tabela() {
     loadPendenciaSYGO();
     loadPendenciaCompleteSYGO();
   }, []);
+
+  useEffect(() => {
+    const interval = setInterval(() => setTime(Date.now()), 90000);
+    if (
+      modalDetalhe &&
+      !modalNova &&
+      modalAndam &&
+      modalFechar &&
+      modalEditar
+    ) {
+      loadPendencia();
+      loadPendenciaSYGO();
+      return () => {
+        clearInterval(interval);
+      };
+    } else {
+      return () => {
+        clearInterval(interval);
+      };
+    }
+  }, [time]);
 
   useEffect(() => {
     startIndex = currentPage * itemsPerPage;
