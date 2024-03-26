@@ -186,7 +186,7 @@ function ModalDetalhePendencia({ fecharModal, penden, closePend, editPend }) {
                 py-2 
                 w-48p 
                 font-semibold 
-                bg-[#ff2c2c] 
+                bg-[#dc3545] 
                 hover:bg-[#de0a26] 
                 text-white 
                 disabled:bg-[#dddddd] 

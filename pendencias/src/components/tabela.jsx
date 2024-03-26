@@ -45,7 +45,6 @@ function Tabela() {
     []
   );
   const [searchValue, setSearchValue] = useState("titulo");
-
   const [time, setTime] = useState(Date.now());
 
   const [pendenciasabertaspag, setPendenciasabertaspag] = useState([]);
